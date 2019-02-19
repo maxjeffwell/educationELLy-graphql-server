@@ -1,13 +1,9 @@
-import { Op } from 'sequelize';
-
 export const batchUsers = async (keys, models) => {
-  const users = await models.User.findAll({
-    where: {
-      id: {
-        [Op.in]: keys,
-      },
+  const users = await models.User.find({
+    _id: {
+      $in: keys,
     },
   });
 
-  return keys.map(key => users.find(user => user.id === key));
+  return keys.map(key => users.find(user => user.id == key));
 };

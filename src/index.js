@@ -9,19 +9,22 @@ import express from 'express';
 import { ApolloServer,
   AuthenticationError,
 } from 'apollo-server-express';
+import mongoose from 'mongoose';
 
 import schema from './schema';
 import resolvers from './resolvers';
-import models, { sequelize } from './models';
+import models from './models';
 import loaders from './loaders';
-import { CLIENT_ORIGIN } from '../config';
+
+mongoose.Promise = global.Promise;
+mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost/local', {
+  useNewUrlParser: true
+});
+mongoose.set('useCreateIndex', true);
 
 const app = express();
 
-app.use(cors({
-  origin: CLIENT_ORIGIN
-  })
-);
+app.use(cors());
 
 app.use(morgan('dev'));
 
@@ -45,9 +48,7 @@ const server = new ApolloServer({
   typeDefs: schema,
   resolvers,
   formatError: error => {
-    const message = error.message
-      .replace('SequelizeValidationError: ', '')
-      .replace('Validation error: ', '');
+    const message = error.message;
 
     return {
       ...error,
@@ -99,13 +100,9 @@ server.installSubscriptionHandlers(httpServer);
 
 const port = process.env.PORT || 8000;
 
-sequelize.sync({
-}).then(async () => {
-
-  httpServer.listen({ port: process.env.PORT || 8000 }, () => {
+httpServer.listen({ port: process.env.PORT || 8000 }, () => {
     console.log(`Apollo Server on http://localhost:${port}/graphql`);
   });
-});
 
 
 

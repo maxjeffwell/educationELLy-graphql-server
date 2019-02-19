@@ -1,21 +1,6 @@
-import Sequelize from 'sequelize';
+import User from './user';
+import Student from './student';
 
-const sequelize = new Sequelize(process.env.DATABASE_URL, {
-  dialect: 'postgres',
-  operatorAliases: false,
-});
-
-const models = {
-  User: sequelize.import('./user'),
-  Message: sequelize.import('./message'),
-};
-
-Object.keys(models).forEach(key => {
-  if ('associate' in models[key]) {
-    models[key].associate(models);
-  }
-});
-
-export { sequelize };
+const models = { User, Student };
 
 export default models;
