@@ -102,7 +102,7 @@ const port = process.env.PORT || 8000;
 
 httpServer.listen({ port: process.env.PORT || 8000 }, () => {
     console.log(`Apollo Server on http://localhost:${port}/graphql`);
-  });
+});
 
 
 
