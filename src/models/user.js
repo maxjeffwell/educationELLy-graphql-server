@@ -8,7 +8,9 @@ const userSchema = new mongoose.Schema({
     type: String,
     unique: true,
     required: true,
-    validate: [isEmail, 'No valid email address provided.'],
+    validate: [
+      isEmail, 'No valid email address provided.'
+    ],
   },
   password: {
     type: String,
@@ -20,26 +22,17 @@ const userSchema = new mongoose.Schema({
 
 userSchema.statics.findByLogin = async function(login) {
   let user = await this.findOne({
-    username: login,
+    email: login,
   });
-
-  if (!user) {
-    user = await this.findOne({ email: login });
-  }
-
   return user;
 };
-
-userSchema.pre('remove', function(next) {
-  this.model('Message').deleteMany({ userId: this._id }, next);
-});
 
 userSchema.pre('save', async function() {
   this.password = await this.generatePasswordHash();
 });
 
 userSchema.methods.generatePasswordHash = async function() {
-  const saltRounds = 10;
+  const saltRounds = 12;
   return await bcrypt.hash(this.password, saltRounds);
 };
 

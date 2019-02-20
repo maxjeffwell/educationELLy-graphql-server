@@ -8,7 +8,7 @@ const studentSchema = new mongoose.Schema ({
 	school: String,
 	studentId: Number,
 	teacher: String,
-	dateOfBirth: Date,
+	dateOfBirth: String,
 	gender: String,
 	race: String,
 	gradeLevel: Number,
