@@ -17,7 +17,7 @@ import models from './models';
 import loaders from './loaders';
 
 mongoose.Promise = global.Promise;
-mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost/local', {
+mongoose.connect(process.env.MONGODB_URI, {
   useNewUrlParser: true
 });
 mongoose.set('useCreateIndex', true);
@@ -33,7 +33,7 @@ const getMe = async req => {
 
   if (token) {
     try {
-      return await jwt.verify(token, process.env.SECRET);
+      return await jwt.verify(token, process.env.JWT_SECRET);
     } catch (e) {
       throw new AuthenticationError(
         'Your session has expired. Please sign in again.',
@@ -73,7 +73,7 @@ const server = new ApolloServer({
       return {
         models,
         me,
-        secret: process.env.SECRET,
+        secret: process.env.JWT_SECRET,
         loaders: {
           user: new DataLoader(keys =>
             loaders.user.batchUsers(keys, models),
