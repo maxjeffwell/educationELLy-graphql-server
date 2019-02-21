@@ -7,11 +7,13 @@ const userSchema = new mongoose.Schema({
   username: {
     type: String,
     unique: true,
-    required: true
+    required: true,
+    trim: true
   },
   email: {
     type: String,
     unique: true,
+    trim: true,
     required: true,
     validate: [
       isEmail, 'No valid email address provided.'

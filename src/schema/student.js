@@ -5,6 +5,21 @@ export default gql`
         student(id: ID!): Student!
 				students: [Student!]!
     }
+		
+		extend type Mutation {
+			updateStudent(input: UpdateStudentInput!): Student!
+		}
+		
+		input UpdateStudentInput {
+			fullname: String
+			school: String
+			teacher: String
+			gradeLevel: String
+			ellStatus: String
+			compositeLevel: String
+			active: Boolean
+			designation: String
+		}
     
     type Student  {
         id: ID!

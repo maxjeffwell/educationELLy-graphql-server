@@ -24,7 +24,12 @@ mongoose.set('useCreateIndex', true);
 
 const app = express();
 
-app.use(cors());
+const corsOption = {
+  origin: true,
+  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+  credentials: true
+};
+app.use(cors(corsOption));
 
 app.use(morgan('dev'));
 
