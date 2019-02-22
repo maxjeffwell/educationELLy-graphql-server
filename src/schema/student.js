@@ -2,30 +2,18 @@ import { gql } from 'apollo-server-express';
 
 export default gql`
     extend type Query {
-        student(id: ID!): Student!
+        student(id: ID): Student!
 				students: [Student!]!
     }
 		
 		extend type Mutation {
-			updateStudent(input: UpdateStudentInput!): Student!
+			updateStudent(id: ID!, input: UpdateStudentInput!): Student!
 		}
 		
-		input UpdateStudentInput {
-			fullname: String
-			school: String
-			teacher: String
-			gradeLevel: String
-			ellStatus: String
-			compositeLevel: String
-			active: Boolean
-			designation: String
-		}
-    
-    type Student  {
-        id: ID!
-        fullName: String!
+		type Student  {
+        _id: ID
+        fullName: String
 		    school: String
-		    studentId: String
 		    teacher: String
 		    dateOfBirth: Date
 		    gender: String
@@ -37,6 +25,17 @@ export default gql`
 		    compositeLevel: String
 		    active: Boolean
 		    designation: String
+        countryOfBirth: String
     }
+		
+		input UpdateStudentInput {
+			  fullName: String
+			  school: String
+			  teacher: String
+			  gradeLevel: String
+			  ellStatus: String
+			  compositeLevel: String
+			  designation: String
+		}
 `;
 

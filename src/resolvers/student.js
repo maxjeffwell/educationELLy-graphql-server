@@ -7,14 +7,14 @@ export default {
         .lean()
         .exec()
     },
-    student: async(root, args) => {
-      return await Student.findById(args.id)
+    student: async(parent, args, { models }) => {
+      return await models.Student.findById(args.id)
         .lean()
         .exec()
-    }
+    },
   },
   Mutation: {
-    updateStudent: async (root, args) => {
+    updateStudent: async (parent, args, ctx) => {
       const update = args.input;
       return await Student.findByIdAndUpdate(args.id, update, { new: true })
         .lean()

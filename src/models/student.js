@@ -6,7 +6,6 @@ const studentSchema = new mongoose.Schema ({
 		required: true
 	},
 	school: String,
-	studentId: Number,
 	teacher: String,
 	dateOfBirth: String,
 	gender: String,
