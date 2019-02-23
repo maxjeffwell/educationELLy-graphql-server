@@ -10,13 +10,13 @@ const studentSchema = new mongoose.Schema ({
 	dateOfBirth: String,
 	gender: String,
 	race: String,
-	gradeLevel: Number,
+	gradeLevel: String,
 	nativeLanguage: String,
 	cityOfBirth: String,
 	countryOfBirth: String,
 	ellStatus: String,
 	compositeLevel: String,
-	active: Boolean,
+	active: String,
 	designation: String
 });
 

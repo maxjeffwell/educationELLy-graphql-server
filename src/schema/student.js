@@ -2,16 +2,18 @@ import { gql } from 'apollo-server-express';
 
 export default gql`
     extend type Query {
-        student(id: ID): Student!
+        student(id: ID): Student
 				students: [Student!]!
     }
 		
 		extend type Mutation {
 			updateStudent(id: ID!, input: UpdateStudentInput!): Student!
+			deleteStudent(id: ID!): Boolean!
+			createStudent(input: NewStudentInput!): Student!
 		}
 		
 		type Student  {
-        _id: ID
+        _id: ID!
         fullName: String
 		    school: String
 		    teacher: String
@@ -23,12 +25,12 @@ export default gql`
 		    cityOfBirth: String
 		    ellStatus: String
 		    compositeLevel: String
-		    active: Boolean
+		    active: String
 		    designation: String
         countryOfBirth: String
     }
-		
-		input UpdateStudentInput {
+    
+    input UpdateStudentInput {
 			  fullName: String
 			  school: String
 			  teacher: String
@@ -37,5 +39,22 @@ export default gql`
 			  compositeLevel: String
 			  designation: String
 		}
+    
+    input NewStudentInput {
+				fullName: String
+				school: String
+				teacher: String
+				dateOfBirth: String
+				gender: String
+				race: String
+				gradeLevel: String
+				nativeLanguage: String
+				cityOfBirth: String
+				countryOfBirth: String
+				ellStatus: String
+				compositeLevel: String
+				active: String
+				designation: String
+    }
 `;
 
