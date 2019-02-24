@@ -21,6 +21,9 @@ mongoose.connect(process.env.MONGODB_URI, {
   useNewUrlParser: true
 });
 mongoose.set('useCreateIndex', true);
+const db = mongoose.connection;
+db.on('error', console.error.bind(console, 'Connection error:'));
+db.once('open', () => console.log('Connected to database'));
 
 const app = express();
 
@@ -101,8 +104,6 @@ if (process.env.NODE_ENV === 'production') {
 }
 
 const httpServer = http.createServer(app);
-server.installSubscriptionHandlers(httpServer);
-
 const port = process.env.PORT || 8000;
 
 httpServer.listen({ port: process.env.PORT || 8000 }, () => {
