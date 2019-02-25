@@ -44,16 +44,9 @@ export default gql`
 				fullName: String
 				school: String
 				teacher: String
-				dateOfBirth: String
-				gender: String
-				race: String
 				gradeLevel: String
-				nativeLanguage: String
-				cityOfBirth: String
-				countryOfBirth: String
 				ellStatus: String
 				compositeLevel: String
-				active: String
 				designation: String
     }
 `;
