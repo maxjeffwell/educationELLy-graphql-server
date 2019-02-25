@@ -45,9 +45,11 @@ export default gql`
 				school: String
 				teacher: String
 				gradeLevel: String
+				nativeLanguage: String
 				ellStatus: String
 				compositeLevel: String
 				designation: String
+				countryOfBirth: String
     }
 `;
 

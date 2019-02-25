@@ -43,6 +43,7 @@ export default {
     createStudent: combineResolvers(
       isAuthenticated,
       async (parent, args, ctx) => {
+        console.log(JSON.stringify(args.input, null, 2));
         return await ctx.models.Student.create(args.input);
       }
     )
