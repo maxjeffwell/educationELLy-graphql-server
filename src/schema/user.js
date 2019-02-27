@@ -3,8 +3,8 @@ import { gql } from 'apollo-server-express';
 export default gql`
   extend type Query {
     users: [User!]  
-    user(id: ID!): User
-    me: User
+    user(_id: String!): User
+    me: User!
   }
 
   extend type Mutation {
@@ -17,7 +17,9 @@ export default gql`
   }
 
   type User {
-      id: ID!
-      email: String!
+      _id: ID!
+      email: String
+      createdAt: Date
+      username: String
   }
 `;

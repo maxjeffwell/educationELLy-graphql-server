@@ -2,22 +2,22 @@ import { gql } from 'apollo-server-express';
 
 export default gql`
     extend type Query {
-        student(id: ID): Student
+        student(_id: ID!): Student
 				students: [Student]!
     }
 		
 		extend type Mutation {
 			updateStudent(input: UpdateStudentInput!): Student!
-			deleteStudent(id: ID!): Boolean!
+			deleteStudent(_id: ID!): Boolean!
 			createStudent(input: NewStudentInput!): Student!
 		}
 		
 		type Student  {
-        id: ID!
+        _id: ID!
         fullName: String
 		    school: String
 		    teacher: String
-		    dateOfBirth: Date
+		    dateOfBirth: String
 		    gender: String
 		    race: String
 		    gradeLevel: String

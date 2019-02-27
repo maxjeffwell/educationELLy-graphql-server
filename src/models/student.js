@@ -1,12 +1,6 @@
-import uuid from 'uuid';
 import mongoose from 'mongoose';
 
 const studentSchema = new mongoose.Schema ({
-	_id: {
-		type: String,
-		index: { unique: true },
-		default: uuid.v4,
-	},
 	fullName: {
 		type: String,
 		required: true,
@@ -24,6 +18,8 @@ const studentSchema = new mongoose.Schema ({
 	compositeLevel: String,
 	active: String,
 	designation: String
+}, {
+	timestamps: true
 });
 
 const Student = mongoose.model('student', studentSchema);

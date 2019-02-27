@@ -26,15 +26,16 @@ mongoose.connect(process.env.MONGODB_URI, {
 mongoose.set('useCreateIndex', true);
 
 const app = express();
-app.use(bodyParser.json());
 
 const corsOption = {
   origin: true,
   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
   credentials: true
 };
-app.use(cors(corsOption));
 
+app.use(bodyParser.urlencoded({extended: true}))
+app.use(bodyParser.json())
+app.use(cors(corsOption))
 app.use(morgan('dev'));
 
 const getMe = async req => {
@@ -105,7 +106,6 @@ if (process.env.NODE_ENV === 'production') {
 }
 
 const httpServer = http.createServer(app);
-server.installSubscriptionHandlers(httpServer);
 
 const port = process.env.PORT || 8000;
 

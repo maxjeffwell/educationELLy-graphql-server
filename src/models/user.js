@@ -1,16 +1,9 @@
-import uuid from 'uuid';
-
 import mongoose from 'mongoose';
 
 import bcrypt from 'bcryptjs';
 import isEmail from 'validator/lib/isEmail';
 
 const userSchema = new mongoose.Schema({
-  _id: {
-    type: String,
-    index: { unique: true },
-    default: uuid.v4,
-  },
   email: {
     type: String,
     unique: true,
@@ -26,7 +19,12 @@ const userSchema = new mongoose.Schema({
     minlength: 7,
     maxlength: 42,
   },
-});
+  createdAt: {
+    type: Date
+  },
+},
+  { timestamps: true }
+  );
 
 userSchema.statics.findByLogin = async function(login) {
   let user = await this.findOne({

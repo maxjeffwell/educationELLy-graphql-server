@@ -23,14 +23,14 @@
     "@babel/register": "^7.0.0",
     "axios": "^0.18.0",
     "chai": "^4.2.0",
-    "mocha": "^6.0.1",
+    "mocha": "^6.0.2",
     "morgan": "^1.9.1",
     "nodemon": "^1.18.10"
   },
   "dependencies": {
     "@babel/polyfill": "^7.2.5",
-    "apollo-server": "^2.4.6",
-    "apollo-server-express": "^2.4.6",
+    "apollo-server": "^2.4.8",
+    "apollo-server-express": "^2.4.8",
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.18.3",
     "cors": "^2.8.5",
@@ -41,8 +41,7 @@
     "graphql-iso-date": "^3.6.1",
     "graphql-resolvers": "^0.3.2",
     "jsonwebtoken": "^8.5.0",
-    "mongoose": "^5.4.15",
-    "uuid": "^3.3.2",
+    "mongoose": "^5.4.16",
     "validator": "^10.11.0"
   }
 }
