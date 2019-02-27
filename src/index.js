@@ -4,11 +4,14 @@ import cors from 'cors';
 import morgan from 'morgan';
 import http from 'http';
 import jwt from 'jsonwebtoken';
+import bodyParser from 'body-parser';
 import DataLoader from 'dataloader';
 import express from 'express';
+
 import { ApolloServer,
   AuthenticationError,
 } from 'apollo-server-express';
+
 import mongoose from 'mongoose';
 
 import schema from './schema';
@@ -23,6 +26,7 @@ mongoose.connect(process.env.MONGODB_URI, {
 mongoose.set('useCreateIndex', true);
 
 const app = express();
+app.use(bodyParser.json());
 
 const corsOption = {
   origin: true,

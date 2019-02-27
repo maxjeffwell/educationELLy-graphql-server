@@ -1,9 +1,16 @@
+import uuid from 'uuid';
+
 import mongoose from 'mongoose';
 
 import bcrypt from 'bcryptjs';
 import isEmail from 'validator/lib/isEmail';
 
 const userSchema = new mongoose.Schema({
+  _id: {
+    type: String,
+    index: { unique: true },
+    default: uuid.v4,
+  },
   email: {
     type: String,
     unique: true,

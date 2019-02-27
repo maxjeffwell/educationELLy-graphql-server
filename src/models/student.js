@@ -1,9 +1,15 @@
+import uuid from 'uuid';
 import mongoose from 'mongoose';
 
 const studentSchema = new mongoose.Schema ({
+	_id: {
+		type: String,
+		index: { unique: true },
+		default: uuid.v4,
+	},
 	fullName: {
 		type: String,
-		required: true
+		required: true,
 	},
 	school: String,
 	teacher: String,

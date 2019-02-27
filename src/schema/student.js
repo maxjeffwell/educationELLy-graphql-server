@@ -3,17 +3,17 @@ import { gql } from 'apollo-server-express';
 export default gql`
     extend type Query {
         student(id: ID): Student
-				students: [Student!]!
+				students: [Student]!
     }
 		
 		extend type Mutation {
-			updateStudent(id: ID!, input: UpdateStudentInput!): Student!
+			updateStudent(input: UpdateStudentInput!): Student!
 			deleteStudent(id: ID!): Boolean!
 			createStudent(input: NewStudentInput!): Student!
 		}
 		
 		type Student  {
-        _id: ID!
+        id: ID!
         fullName: String
 		    school: String
 		    teacher: String
@@ -41,7 +41,7 @@ export default gql`
 		}
     
     input NewStudentInput {
-				fullName: String
+				fullName: String!
 				school: String
 				teacher: String
 				gradeLevel: String

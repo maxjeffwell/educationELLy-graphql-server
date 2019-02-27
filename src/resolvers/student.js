@@ -13,7 +13,7 @@ export default {
       },
     ),
     student: async(parent, args, ctx) => {
-      return await ctx.models.Student.findById(args.id)
+      return await ctx.models.Student.findById(args.id.toString())
         .lean()
         .exec()
       },
@@ -23,7 +23,7 @@ export default {
       isAuthenticated,
       async (parent, args, ctx) => {
       const update = args.input;
-      return await ctx.models.Student.findByIdAndUpdate(args.id, update, { new: true })
+      return await ctx.models.Student.findByIdAndUpdate(args, update, { new: true })
         .lean()
         .exec()
       },
@@ -31,7 +31,7 @@ export default {
     deleteStudent: combineResolvers(
       isAuthenticated,
       async (parent, args, { models }) => {
-        const student = await models.Student.findById(args.id);
+        const student = await models.Student.findById(args.id.toString());
         if (student) {
           await student.remove();
           return true;
