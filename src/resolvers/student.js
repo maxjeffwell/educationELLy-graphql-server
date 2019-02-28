@@ -12,21 +12,20 @@ export default {
     ),
     student: combineResolvers(
       isAuthenticated,
-      async (parent, args, ctx) => {
-        return await ctx.models.Student.findById(id).exec()
+      async (parent, { _id }, ctx) => {
+        return await ctx.models.Student.findById(_id).exec()
       }),
   },
 
     Mutation: {
       updateStudent: combineResolvers(
         isAuthenticated,
-        async (parent, args, ctx) => {
-          const { id, data } = args;
+        async (parent, { _id, data }, ctx, info) => {
 
-          return ctx.models.Student.findById((id) =>
-            Student.id === id);
+          return ctx.models.Student.findById((_id) =>
+            Student._id === _id);
 
-          if (!Student.id) {
+          if (!Student._id) {
             throw new Error('Student not found');
           }
 
@@ -70,21 +69,15 @@ export default {
 
       deleteStudent: combineResolvers(
         isAuthenticated,
-        async (parent, { id }, { models }) => {
-          const student = await models.Student.findById(_id);
-          if (student) {
-            await student.remove();
-            return true;
-          } else {
-            return false;
-          }
-        },
-      ),
+        async (parent, { _id }, { models }) => {
+          const student = await models.Student.findOneAndRemove({ _id })
+          return !!student;
+        }
+        ),
 
       createStudent: combineResolvers(
         isAuthenticated,
         async (parent, args, ctx) => {
-          console.log(JSON.stringify(args.input, null, 2));
           return await ctx.models.Student.create(args.input);
         })
     },

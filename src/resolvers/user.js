@@ -23,7 +23,7 @@ export default {
           } else if (doc) {
             resolve({ success: true, data: doc });
           } else {
-            reject({ success: false, data: "No data exists for the user with that id" });
+            reject({ success: false, data: "No data exists for a user with that id" });
           }
         });
       } else {
@@ -40,8 +40,8 @@ export default {
     },
 
   Mutation: {
-    signUp: async (parent, { email, password }, { models, secret },) => {
-      const user = await models.User.create({input});
+    signUp: async (parent, { email, password}, { models, secret },) => {
+      const user = await models.User.create({ email, password });
       return { token: createToken(user, secret, '1d') };
     },
 
@@ -50,14 +50,14 @@ export default {
       const user = await models.User.findByLogin(login);
       if (!user) {
         throw new UserInputError(
-          'You entered invalid login credentials',
+          'You have entered invalid login credentials',
         );
       }
 
       const isValid = await user.validatePassword(password);
 
       if (!isValid) {
-        throw new AuthenticationError('You entered invalid login credentials');
+        throw new AuthenticationError('You have entered invalid login credentials');
       }
 
       return { token: createToken(user, secret, '1d') };

@@ -28,6 +28,8 @@ export default gql`
 		    active: String
 		    designation: String
         countryOfBirth: String
+				createdAt: Date
+				updatedAt: Date
     }
     
     input UpdateStudentInput {
