@@ -70,10 +70,9 @@ export default {
       deleteStudent: combineResolvers(
         isAuthenticated,
         async (parent, { _id }, { models }) => {
-          const student = await models.Student.findOneAndRemove({ _id })
-          return !!student;
-        }
-        ),
+          return await models.Student.findOneAndDelete({ _id }).exec();
+        },
+      ),
 
       createStudent: combineResolvers(
         isAuthenticated,

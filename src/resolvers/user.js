@@ -15,20 +15,8 @@ export default {
       return await models.User.find();
     },
 
-    user: async (parent, { id }, { models }) => {
-      if (mongoose.Schema.Types.ObjectId.isValid(id)) {
-        return await models.User.findById(id, function(err, doc) {
-          if (err) {
-            reject(err);
-          } else if (doc) {
-            resolve({ success: true, data: doc });
-          } else {
-            reject({ success: false, data: "No data exists for a user with that id" });
-          }
-        });
-      } else {
-        reject({ success: false, data: "Please provide the correct id" });
-      }
+    user: async (parent, { _id }, { models }) => {
+      return await models.User.findById(_id).exec()
     },
 
     me: async (parent, args, { models, me }) => {

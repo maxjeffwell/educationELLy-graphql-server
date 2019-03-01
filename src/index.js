@@ -4,7 +4,7 @@ import cors from 'cors';
 import morgan from 'morgan';
 import http from 'http';
 import jwt from 'jsonwebtoken';
-import bodyParser from 'body-parser';
+import { bodyParserGraphQL } from 'body-parser-graphql';
 import DataLoader from 'dataloader';
 import express from 'express';
 
@@ -33,9 +33,8 @@ const corsOption = {
   credentials: true
 };
 
-app.use(bodyParser.urlencoded({extended: true}))
-app.use(bodyParser.json())
-app.use(cors(corsOption))
+app.use(bodyParserGraphQL());
+app.use(cors(corsOption));
 app.use(morgan('dev'));
 
 const getMe = async req => {
@@ -71,10 +70,9 @@ const server = new ApolloServer({
         models,
         loaders: {
           user: new DataLoader(keys =>
-            loaders.user.batchUsers(keys, models),
-          ),
+            loaders.user.batchUsers(keys, models))
         },
-      };
+      }
     }
 
     if (req) {
@@ -86,8 +84,9 @@ const server = new ApolloServer({
         secret: process.env.JWT_SECRET,
         loaders: {
           user: new DataLoader(keys =>
-            loaders.user.batchUsers(keys, models),
-          ),
+            loaders.user.batchUsers(keys, models)),
+          student: new DataLoader(keys =>
+            loaders.student.batchStudents(keys, models)),
         },
       };
     }

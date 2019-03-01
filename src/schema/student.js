@@ -8,7 +8,7 @@ export default gql`
 		
 		extend type Mutation {
 			updateStudent(input: UpdateStudentInput!): Student!
-			deleteStudent(_id: ID!): Boolean!
+			deleteStudent(_id: ID!): Student!
 			createStudent(input: NewStudentInput!): Student!
 		}
 		
@@ -40,6 +40,7 @@ export default gql`
 			  ellStatus: String
 			  compositeLevel: String
 			  designation: String
+				updatedAt: Date
 		}
     
     input NewStudentInput {
@@ -52,6 +53,7 @@ export default gql`
 				compositeLevel: String
 				designation: String
 				countryOfBirth: String
+				createdAt: Date
     }
 `;
 
