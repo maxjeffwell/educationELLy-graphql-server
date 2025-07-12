@@ -1,5 +1,5 @@
 import jwt from 'jsonwebtoken';
-import { AuthenticationError, UserInputError } from 'apollo-server';
+import { GraphQLError } from 'graphql';
 import mongoose from 'mongoose';
 
 const createToken = async (user, secret, expiresIn) => {
@@ -37,15 +37,24 @@ export default {
     ) => {
       const user = await models.User.findByLogin(login);
       if (!user) {
-        throw new UserInputError(
+        throw new GraphQLError(
           'You have entered invalid login credentials',
+          {
+            extensions: {
+              code: 'BAD_USER_INPUT',
+            },
+          }
         );
       }
 
       const isValid = await user.validatePassword(password);
 
       if (!isValid) {
-        throw new AuthenticationError('You have entered invalid login credentials');
+        throw new GraphQLError('You have entered invalid login credentials', {
+          extensions: {
+            code: 'UNAUTHENTICATED',
+          },
+        });
       }
 
       return { token: createToken(user, secret, '1d') };
