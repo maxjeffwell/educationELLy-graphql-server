@@ -29,7 +29,7 @@ async function startServer() {
   const corsOption = {
     origin: process.env.ALLOWED_ORIGINS ? process.env.ALLOWED_ORIGINS.split(',') : ['http://localhost:3000'],
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-    credentials: true
+    credentials: true,
   };
 
   app.use(bodyParserGraphQL());
@@ -42,7 +42,7 @@ async function startServer() {
     if (token) {
       try {
         return await jwt.verify(token, process.env.JWT_SECRET);
-      } catch (e) {
+      } catch {
         throw new GraphQLError(
           'Your session has expired. Please sign in again.',
           {
@@ -96,7 +96,7 @@ async function startServer() {
           },
         };
       },
-    }),
+    })
   );
 
   if (process.env.NODE_ENV === 'production') {
@@ -109,7 +109,7 @@ async function startServer() {
   const port = process.env.PORT || 8000;
 
   httpServer.listen({ port }, () => {
-      console.log(`🚀 Apollo Server ready at http://localhost:${port}/graphql`);
+    console.log(`🚀 Apollo Server ready at http://localhost:${port}/graphql`);
   });
 }
 
@@ -117,6 +117,4 @@ startServer().catch(error => {
   console.error('Failed to start server:', error);
   process.exit(1);
 });
-
-
 

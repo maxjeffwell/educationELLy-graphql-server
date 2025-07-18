@@ -30,11 +30,11 @@ export const me = async token =>
     },
     token
       ? {
-          headers: {
-            'x-token': token,
-          },
-        }
-      : null,
+        headers: {
+          'x-token': token,
+        },
+      }
+      : null
   );
 
 export const user = async variables =>
@@ -101,11 +101,11 @@ export const updateUser = async (variables, token) =>
     },
     token
       ? {
-          headers: {
-            'x-token': token,
-          },
-        }
-      : null,
+        headers: {
+          'x-token': token,
+        },
+      }
+      : null
   );
 
 export const deleteUser = async (variables, token) =>
@@ -121,9 +121,9 @@ export const deleteUser = async (variables, token) =>
     },
     token
       ? {
-          headers: {
-            'x-token': token,
-          },
-        }
-      : null,
+        headers: {
+          'x-token': token,
+        },
+      }
+      : null
   );

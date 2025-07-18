@@ -14,8 +14,8 @@ export const isAdmin = combineResolvers(
     role === 'ADMIN'
       ? skip
       : new GraphQLError('You are not authorized as an administrator', {
-          extensions: {
-            code: 'FORBIDDEN',
-          },
-        }),
+        extensions: {
+          code: 'FORBIDDEN',
+        },
+      })
 );

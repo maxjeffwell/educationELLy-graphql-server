@@ -106,7 +106,7 @@ describe('users', () => {
     it('signs up a user, updates a user and deletes the user as admin', async () => {
       // sign up
 
-      let {
+      const {
         data: {
           data: {
             signUp: { token },
@@ -246,7 +246,7 @@ describe('users', () => {
     });
 
     expect(errors[0].message).to.eql(
-      'No user found with this login credentials.',
+      'No user found with this login credentials.'
     );
   });
 });

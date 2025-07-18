@@ -10,5 +10,5 @@ const customScalarResolver = {
 export default [
   customScalarResolver,
   userResolvers,
-  studentResolvers
+  studentResolvers,
 ];
