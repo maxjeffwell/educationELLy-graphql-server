@@ -4,7 +4,6 @@ import * as userApi from './api';
 
 describe('users', () => {
   let validUserId;
-  let adminToken;
 
   before(async () => {
     // Create initial test users
@@ -18,18 +17,11 @@ describe('users', () => {
       password: 'testpassword123',
     });
 
-    // Get admin token for authenticated tests
-    const {
-      data: {
-        data: {
-          signIn: { token },
-        },
-      },
-    } = await userApi.signIn({
+    // Get admin token for authenticated tests  
+    await userApi.signIn({
       login: 'admin@educationelly.com',
       password: 'testpassword123',
     });
-    adminToken = token;
 
     // Get a valid user ID from the created users
     const { data } = await userApi.users();
