@@ -22,7 +22,14 @@ import loaders from './loaders';
 
 async function startServer() {
   mongoose.Promise = global.Promise;
-  await mongoose.connect(process.env.MONGODB_URI);
+  
+  // Use test database if TEST_DATABASE environment variable is set
+  let mongoUri = process.env.MONGODB_URI;
+  if (process.env.TEST_DATABASE) {
+    mongoUri = `mongodb://localhost:27017/${process.env.TEST_DATABASE}`;
+  }
+  
+  await mongoose.connect(mongoUri);
 
   const app = express();
 

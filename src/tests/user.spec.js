@@ -3,88 +3,89 @@ import { expect } from 'chai';
 import * as userApi from './api';
 
 describe('users', () => {
-  describe('user(id: String!): User', () => {
-    it('returns a user when user can be found', async () => {
-      const expectedResult = {
+  let validUserId;
+  let adminToken;
+
+  before(async () => {
+    // Create initial test users
+    await userApi.signUp({
+      email: 'admin@educationelly.com',
+      password: 'testpassword123',
+    });
+
+    await userApi.signUp({
+      email: 'teacher1@school.edu', 
+      password: 'testpassword123',
+    });
+
+    // Get admin token for authenticated tests
+    const {
+      data: {
         data: {
-          user: {
-            id: '1',
-            username: 'rwieruch',
-            email: 'hello@robin.com',
-            role: 'ADMIN',
-          },
+          signIn: { token },
         },
-      };
+      },
+    } = await userApi.signIn({
+      login: 'admin@educationelly.com',
+      password: 'testpassword123',
+    });
+    adminToken = token;
 
-      const result = await userApi.user({ id: '1' });
+    // Get a valid user ID from the created users
+    const { data } = await userApi.users();
+    if (data.data.users && data.data.users.length > 0) {
+      validUserId = data.data.users[0]._id;
+    }
+  });
 
-      expect(result.data).to.eql(expectedResult);
+  describe('user(_id: ID!): User', () => {
+    it('returns a user when user can be found', async () => {
+      const result = await userApi.user({ _id: validUserId });
+
+      expect(result.data.data.user).to.be.an('object');
+      expect(result.data.data.user._id).to.equal(validUserId);
+      expect(result.data.data.user).to.have.property('email');
+      expect(result.data.data.user).to.have.property('createdAt');
+      expect(result.data.data.user).to.have.property('updatedAt');
     });
 
     it('returns null when user cannot be found', async () => {
-      const expectedResult = {
-        data: {
-          user: null,
-        },
-      };
+      const result = await userApi.user({ _id: '507f1f77bcf86cd799439011' });
 
-      const result = await userApi.user({ id: '42' });
-
-      expect(result.data).to.eql(expectedResult);
+      expect(result.data.data.user).to.be.null;
     });
   });
 
-  describe('users: [User!]', () => {
+  describe('users: [User!]!', () => {
     it('returns a list of users', async () => {
-      const expectedResult = {
-        data: {
-          users: [
-            {
-              id: '1',
-              username: 'rwieruch',
-              email: 'hello@robin.com',
-              role: 'ADMIN',
-            },
-            {
-              id: '2',
-              username: 'ddavids',
-              email: 'hello@david.com',
-              role: null,
-            },
-          ],
-        },
-      };
-
       const result = await userApi.users();
 
-      expect(result.data).to.eql(expectedResult);
+      expect(result.data.data.users).to.be.an('array');
+      expect(result.data.data.users.length).to.be.greaterThan(0);
+      
+      const firstUser = result.data.data.users[0];
+      expect(firstUser).to.have.property('_id');
+      expect(firstUser).to.have.property('email');
+      expect(firstUser).to.have.property('createdAt');
+      expect(firstUser).to.have.property('updatedAt');
     });
   });
 
   describe('me: User', () => {
     it('returns null when no user is signed in', async () => {
-      const expectedResult = {
-        data: {
-          me: null,
-        },
-      };
+      const response = await userApi.me();
+      
+      // Check for GraphQL errors
+      if (response.data.errors) {
+        console.log('GraphQL errors:', response.data.errors);
+      }
 
-      const { data } = await userApi.me();
-
-      expect(data).to.eql(expectedResult);
+      expect(response.data).to.exist;
+      expect(response.data.data).to.exist;
+      expect(response.data.data.me).to.be.null;
     });
 
     it('returns me when me is signed in', async () => {
-      const expectedResult = {
-        data: {
-          me: {
-            id: '1',
-            username: 'rwieruch',
-            email: 'hello@robin.com',
-          },
-        },
-      };
-
       const {
         data: {
           data: {
@@ -92,31 +93,46 @@ describe('users', () => {
           },
         },
       } = await userApi.signIn({
-        login: 'rwieruch',
-        password: 'rwieruch',
+        login: 'admin@educationelly.com',
+        password: 'testpassword123',
       });
 
       const { data } = await userApi.me(token);
 
-      expect(data).to.eql(expectedResult);
+      expect(data.data.me).to.be.an('object');
+      expect(data.data.me).to.have.property('_id');
+      expect(data.data.me).to.have.property('email');
+      expect(data.data.me.email).to.equal('admin@educationelly.com');
+      expect(data.data.me).to.have.property('createdAt');
+      expect(data.data.me).to.have.property('updatedAt');
     });
   });
 
-  describe('signUp, updateUser, deleteUser', () => {
-    it('signs up a user, updates a user and deletes the user as admin', async () => {
-      // sign up
-
-      const {
-        data: {
-          data: {
-            signUp: { token },
-          },
-        },
-      } = await userApi.signUp({
-        username: 'Mark',
-        email: 'mark@gmule.com',
-        password: 'asdasdasd',
+  describe('signUp', () => {
+    it('signs up a new user successfully', async () => {
+      const uniqueEmail = `user${Date.now()}@test.com`;
+      const response = await userApi.signUp({
+        email: uniqueEmail,
+        password: 'testpassword123',
       });
+
+      // Check for errors first
+      if (response.data.errors) {
+        console.log('SignUp errors:', response.data.errors);
+      }
+
+      expect(response).to.exist;
+      expect(response.data).to.exist;
+      
+      if (!response.data.data) {
+        console.log('Response data:', response.data);
+      }
+      
+      expect(response.data.data).to.exist;
+      expect(response.data.data.signUp).to.exist;
+      expect(response.data.data.signUp.token).to.be.a('string');
+
+      const token = response.data.data.signUp.token;
 
       const {
         data: {
@@ -124,92 +140,28 @@ describe('users', () => {
         },
       } = await userApi.me(token);
 
-      expect(me).to.eql({
-        id: '3',
-        username: 'Mark',
-        email: 'mark@gmule.com',
-      });
-
-      // update as user
-
-      const {
-        data: {
-          data: { updateUser },
-        },
-      } = await userApi.updateUser({ username: 'Mark' }, token);
-
-      expect(updateUser.username).to.eql('Mark');
-
-      // delete as admin
-
-      const {
-        data: {
-          data: {
-            signIn: { token: adminToken },
-          },
-        },
-      } = await userApi.signIn({
-        login: 'rwieruch',
-        password: 'rwieruch',
-      });
-
-      const {
-        data: {
-          data: { deleteUser },
-        },
-      } = await userApi.deleteUser({ id: me.id }, adminToken);
-
-      expect(deleteUser).to.eql(true);
+      expect(me).to.be.an('object');
+      expect(me).to.have.property('_id');
+      expect(me.email).to.equal(uniqueEmail);
+      expect(me).to.have.property('createdAt');
+      expect(me).to.have.property('updatedAt');
     });
-  });
 
-  describe('deleteUser(id: String!): Boolean!', () => {
-    it('returns an error because only admins can delete a user', async () => {
-      const {
-        data: {
-          data: {
-            signIn: { token },
-          },
-        },
-      } = await userApi.signIn({
-        login: 'ddavids',
-        password: 'ddavids',
-      });
-
+    it('returns an error when signing up with existing email', async () => {
       const {
         data: { errors },
-      } = await userApi.deleteUser({ id: '1' }, token);
+      } = await userApi.signUp({
+        email: 'admin@educationelly.com',
+        password: 'testpassword123',
+      });
 
-      expect(errors[0].message).to.eql('Not authorized as admin.');
+      expect(errors).to.be.an('array');
+      expect(errors[0].message).to.include('E11000'); // MongoDB duplicate key error
     });
   });
 
-  describe('updateUser(username: String!): User!', () => {
-    it('returns an error because only authenticated users can update a user', async () => {
-      const {
-        data: { errors },
-      } = await userApi.updateUser({ username: 'Mark' });
-
-      expect(errors[0].message).to.eql('Not authenticated as user.');
-    });
-  });
 
   describe('signIn(login: String!, password: String!): Token!', () => {
-    it('returns a token when a user signs in with username', async () => {
-      const {
-        data: {
-          data: {
-            signIn: { token },
-          },
-        },
-      } = await userApi.signIn({
-        login: 'ddavids',
-        password: 'ddavids',
-      });
-
-      expect(token).to.be.a('string');
-    });
-
     it('returns a token when a user signs in with email', async () => {
       const {
         data: {
@@ -218,8 +170,23 @@ describe('users', () => {
           },
         },
       } = await userApi.signIn({
-        login: 'hello@david.com',
-        password: 'ddavids',
+        login: 'admin@educationelly.com',
+        password: 'testpassword123',
+      });
+
+      expect(token).to.be.a('string');
+    });
+
+    it('returns a token when a user signs in with teacher email', async () => {
+      const {
+        data: {
+          data: {
+            signIn: { token },
+          },
+        },
+      } = await userApi.signIn({
+        login: 'teacher1@school.edu',
+        password: 'testpassword123',
       });
 
       expect(token).to.be.a('string');
@@ -229,24 +196,22 @@ describe('users', () => {
       const {
         data: { errors },
       } = await userApi.signIn({
-        login: 'ddavids',
-        password: 'dontknow',
+        login: 'admin@educationelly.com',
+        password: 'wrongpassword',
       });
 
-      expect(errors[0].message).to.eql('Invalid password.');
-    });
-  });
-
-  it('returns an error when a user is not found', async () => {
-    const {
-      data: { errors },
-    } = await userApi.signIn({
-      login: 'dontknow',
-      password: 'ddavids',
+      expect(errors[0].message).to.include('You have entered invalid login credentials');
     });
 
-    expect(errors[0].message).to.eql(
-      'No user found with this login credentials.'
-    );
+    it('returns an error when a user is not found', async () => {
+      const {
+        data: { errors },
+      } = await userApi.signIn({
+        login: 'nonexistent@user.com',
+        password: 'anypassword',
+      });
+
+      expect(errors[0].message).to.include('You have entered invalid login credentials');
+    });
   });
 });

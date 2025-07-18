@@ -21,9 +21,10 @@ export const me = async token =>
       query: `
         {
           me {
-            id
+            _id
             email
-            username
+            createdAt
+            updatedAt
           }
         }
       `,
@@ -40,12 +41,12 @@ export const me = async token =>
 export const user = async variables =>
   axios.post(API_URL, {
     query: `
-      query ($id: ID!) {
-        user(id: $id) {
-          id
-          username
+      query ($_id: ID!) {
+        user(_id: $_id) {
+          _id
           email
-          role
+          createdAt
+          updatedAt
         }
       }
     `,
@@ -57,10 +58,10 @@ export const users = async () =>
     query: `
       {
         users {
-          id
-          username
+          _id
           email
-          role
+          createdAt
+          updatedAt
         }
       }
     `,
@@ -69,16 +70,8 @@ export const users = async () =>
 export const signUp = async variables =>
   axios.post(API_URL, {
     query: `
-      mutation(
-        $username: String!,
-        $email: String!,
-        $password: String!
-      ) {
-        signUp(
-          username: $username,
-          email: $email,
-          password: $password
-        ) {
+      mutation($email: String!, $password: String!) {
+        signUp(email: $email, password: $password) {
           token
         }
       }
@@ -86,14 +79,68 @@ export const signUp = async variables =>
     variables,
   });
 
-export const updateUser = async (variables, token) =>
+// Student API functions
+export const students = async (token) =>
   axios.post(
     API_URL,
     {
       query: `
-        mutation ($username: String!) {
-          updateUser(username: $username) {
-            username
+        {
+          students {
+            _id
+            fullName
+            school
+            teacher
+            dateOfBirth
+            gender
+            race
+            gradeLevel
+            nativeLanguage
+            cityOfBirth
+            countryOfBirth
+            ellStatus
+            compositeLevel
+            active
+            designation
+            createdAt
+            updatedAt
+          }
+        }
+      `,
+    },
+    token
+      ? {
+        headers: {
+          'x-token': token,
+        },
+      }
+      : null
+  );
+
+export const student = async (variables, token) =>
+  axios.post(
+    API_URL,
+    {
+      query: `
+        query ($_id: ID!) {
+          student(_id: $_id) {
+            _id
+            fullName
+            school
+            teacher
+            dateOfBirth
+            gender
+            race
+            gradeLevel
+            nativeLanguage
+            cityOfBirth
+            countryOfBirth
+            ellStatus
+            compositeLevel
+            active
+            designation
+            createdAt
+            updatedAt
           }
         }
       `,
@@ -108,13 +155,68 @@ export const updateUser = async (variables, token) =>
       : null
   );
 
-export const deleteUser = async (variables, token) =>
+export const createStudent = async (variables, token) =>
   axios.post(
     API_URL,
     {
       query: `
-        mutation ($id: ID!) {
-          deleteUser(id: $id)
+        mutation ($input: NewStudentInput!) {
+          createStudent(input: $input) {
+            _id
+            fullName
+            school
+            teacher
+            ellStatus
+            active
+          }
+        }
+      `,
+      variables,
+    },
+    token
+      ? {
+        headers: {
+          'x-token': token,
+        },
+      }
+      : null
+  );
+
+export const updateStudent = async (variables, token) =>
+  axios.post(
+    API_URL,
+    {
+      query: `
+        mutation ($_id: ID!, $input: UpdateStudentInput!) {
+          updateStudent(_id: $_id, input: $input) {
+            _id
+            fullName
+            school
+            teacher
+            ellStatus
+            active
+            updatedAt
+          }
+        }
+      `,
+      variables,
+    },
+    token
+      ? {
+        headers: {
+          'x-token': token,
+        },
+      }
+      : null
+  );
+
+export const deleteStudent = async (variables, token) =>
+  axios.post(
+    API_URL,
+    {
+      query: `
+        mutation ($_id: ID!) {
+          deleteStudent(_id: $_id)
         }
       `,
       variables,
