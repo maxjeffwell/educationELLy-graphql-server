@@ -10,7 +10,7 @@ const userSchema = new mongoose.Schema({
     trim: true,
     required: true,
     validate: [
-      isEmail, 'No valid email address provided.'
+      isEmail, 'No valid email address provided.',
     ],
   },
   password: {
@@ -19,30 +19,27 @@ const userSchema = new mongoose.Schema({
     minlength: 7,
     maxlength: 42,
   },
-  createdAt: {
-    type: Date
-  },
 },
-  { timestamps: true }
-  );
+{ timestamps: true }
+);
 
-userSchema.statics.findByLogin = async function(login) {
-  let user = await this.findOne({
+userSchema.statics.findByLogin = async function (login) {
+  const user = await this.findOne({
     email: login,
   });
   return user;
 };
 
-userSchema.pre('save', async function() {
+userSchema.pre('save', async function () {
   this.password = await this.generatePasswordHash();
 });
 
-userSchema.methods.generatePasswordHash = async function() {
+userSchema.methods.generatePasswordHash = async function () {
   const saltRounds = 12;
   return await bcrypt.hash(this.password, saltRounds);
 };
 
-userSchema.methods.validatePassword = async function(password) {
+userSchema.methods.validatePassword = async function (password) {
   return await bcrypt.compare(password, this.password);
 };
 

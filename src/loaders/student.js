@@ -5,5 +5,5 @@ export const batchStudents = async (keys, models) => {
     },
   });
 
-  return keys.map(key => students.find(student => student.id === key));
+  return keys.map(key => students.find(student => student._id.toString() === key));
 };

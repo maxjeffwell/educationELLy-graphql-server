@@ -1,39 +1,34 @@
 import jwt from 'jsonwebtoken';
 import { GraphQLError } from 'graphql';
-import mongoose from 'mongoose';
 
 const createToken = async (user, secret, expiresIn) => {
-  const { id, email } = user;
-  return await jwt.sign({ id, email }, secret, {
+  const { _id, email } = user;
+  return await jwt.sign({ id: _id, email }, secret, {
     expiresIn,
   });
 };
 
 export default {
   Query: {
-    users: async (parent, args, { models }) => {
-      return await models.User.find();
-    },
+    users: async (parent, args, { models }) => await models.User.find(),
 
-    user: async (parent, { _id }, { models }) => {
-      return await models.User.findById(_id).exec()
-    },
+    user: async (parent, { _id }, { models }) => await models.User.findById(_id).exec(),
 
     me: async (parent, args, { models, me }) => {
       if (!me) {
         return null;
       }
-        return await models.User.findById(me.id);
-      }
+      return await models.User.findById(me.id);
     },
+  },
 
   Mutation: {
-    signUp: async (parent, { email, password}, { models, secret },) => {
+    signUp: async (parent, { email, password }, { models, secret }) => {
       const user = await models.User.create({ email, password });
       return { token: createToken(user, secret, '1d') };
     },
 
-    signIn: async (parent, { login, password }, { models, secret },
+    signIn: async (parent, { login, password }, { models, secret }
     ) => {
       const user = await models.User.findByLogin(login);
       if (!user) {
