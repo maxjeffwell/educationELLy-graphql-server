@@ -2,14 +2,14 @@ import { gql } from 'graphql-tag';
 
 export default gql`
   extend type Query {
-    users: [User!]  
+    users: [User!]!
     user(_id: ID!): User
     me: User!
   }
 
   extend type Mutation {
-      signUp(email: String!, password: String!): Token!
-      signIn(login: String!, password: String!): Token!
+    signUp(email: String!, password: String!): Token!
+    signIn(login: String!, password: String!): Token!
   }
 
   type Token {
@@ -17,8 +17,9 @@ export default gql`
   }
 
   type User {
-      _id: ID!
-      email: String!
-      createdAt: Date
+    _id: ID!
+    email: String!
+    createdAt: Date!
+    updatedAt: Date!
   }
 `;
