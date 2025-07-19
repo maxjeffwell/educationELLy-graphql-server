@@ -17,7 +17,7 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
     minlength: 7,
-    maxlength: 42,
+    maxlength: 120, // Increased to accommodate bcrypt hashes
   },
 },
 { timestamps: true }
