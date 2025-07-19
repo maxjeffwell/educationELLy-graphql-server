@@ -34,7 +34,10 @@ async function startServer() {
   const app = express();
 
   const corsOption = {
-    origin: process.env.ALLOWED_ORIGINS ? process.env.ALLOWED_ORIGINS.split(',') : ['http://localhost:3000'],
+    origin: process.env.ALLOWED_ORIGINS ? process.env.ALLOWED_ORIGINS.split(',') : [
+      'http://localhost:3000',
+      'https://educationelly-server-graphql-5b9748151d5a.herokuapp.com'
+    ],
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true,
   };
@@ -42,6 +45,20 @@ async function startServer() {
   app.use(bodyParserGraphQL());
   app.use(cors(corsOption));
   app.use(morgan('dev'));
+
+  // Health check endpoint for Heroku
+  app.get('/health', (req, res) => {
+    res.status(200).json({ status: 'OK', timestamp: new Date().toISOString() });
+  });
+
+  // Root endpoint
+  app.get('/', (req, res) => {
+    res.json({ 
+      message: 'EducationELLy GraphQL Server', 
+      graphql: '/graphql',
+      health: '/health'
+    });
+  });
 
   const getMe = async req => {
     const token = req.headers['x-token'];
@@ -70,8 +87,14 @@ async function startServer() {
     introspection: process.env.NODE_ENV !== 'production',
     plugins: [ApolloServerPluginDrainHttpServer({ httpServer })],
     formatError: (formattedError, error) => {
+      console.error('GraphQL Error:', {
+        message: error.message,
+        locations: error.locations,
+        path: error.path,
+        stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
+      });
+      
       if (process.env.NODE_ENV === 'production') {
-        console.error('GraphQL Error:', error);
         return new GraphQLError('Internal server error', {
           extensions: {
             code: 'INTERNAL_SERVER_ERROR',
@@ -117,6 +140,20 @@ async function startServer() {
 
   httpServer.listen({ port }, () => {
     console.log(`🚀 Apollo Server ready at http://localhost:${port}/graphql`);
+    console.log(`📊 Health check available at http://localhost:${port}/health`);
+    console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
+    console.log(`🗄️ Database: ${mongoUri ? 'Connected' : 'Not configured'}`);
+  });
+
+  // Handle unhandled rejections
+  process.on('unhandledRejection', (reason, promise) => {
+    console.error('Unhandled Rejection at:', promise, 'reason:', reason);
+  });
+
+  // Handle uncaught exceptions  
+  process.on('uncaughtException', (error) => {
+    console.error('Uncaught Exception:', error);
+    process.exit(1);
   });
 }
 
