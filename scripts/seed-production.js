@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import 'dotenv/config';
+import 'dotenv/config.js';
 
 // Import models
 import User from '../src/models/user.js';
@@ -41,6 +41,10 @@ const seedDatabase = async () => {
       {
         email: 'coordinator@district.org',
         password: 'coord123',
+      },
+      {
+        email: 'demo@example.com',
+        password: 'demopassword',
       }
     ];
 
