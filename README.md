@@ -476,3 +476,16 @@ Jeff Maxwell <maxjeffwell@gmail.com>
 - Built with Apollo Server 4.x
 - Inspired by best practices in GraphQL API design
 - Designed for educational institutions managing ELL students
+
+---
+
+## Metadata
+
+**Project**: EducationELLy GraphQL Server  
+**Version**: 1.0.0  
+**Created**: 2024  
+**Last Updated**: January 2025  
+**License**: GNU GPLv3  
+**Repository**: [github.com/maxjeffwell/educationelly-graphql](https://github.com/maxjeffwell/educationelly-graphql)  
+**Technologies**: Node.js, Apollo Server 4.x, Express, MongoDB, GraphQL  
+**Category**: Education Technology, ELL Management System
