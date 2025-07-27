@@ -22,13 +22,13 @@ import loaders from './loaders';
 
 async function startServer() {
   mongoose.Promise = global.Promise;
-  
+
   // Use test database if TEST_DATABASE environment variable is set
   let mongoUri = process.env.MONGODB_URI;
   if (process.env.TEST_DATABASE) {
     mongoUri = `mongodb://localhost:27017/${process.env.TEST_DATABASE}`;
   }
-  
+
   await mongoose.connect(mongoUri);
 
   const app = express();
@@ -53,8 +53,8 @@ async function startServer() {
 
   // Root endpoint
   app.get('/', (req, res) => {
-    res.json({ 
-      message: 'EducationELLy GraphQL Server', 
+    res.json({
+      message: 'EducationELLy GraphQL Server',
       graphql: '/graphql',
       health: '/health'
     });
@@ -84,7 +84,8 @@ async function startServer() {
   const server = new ApolloServer({
     typeDefs: schema,
     resolvers,
-    introspection: process.env.NODE_ENV !== 'production',
+    introspection: true,
+    playground: true,
     plugins: [ApolloServerPluginDrainHttpServer({ httpServer })],
     formatError: (formattedError, error) => {
       console.error('GraphQL Error:', {
@@ -93,7 +94,7 @@ async function startServer() {
         path: error.path,
         stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
       });
-      
+
       if (process.env.NODE_ENV === 'production') {
         return new GraphQLError('Internal server error', {
           extensions: {
@@ -150,7 +151,7 @@ async function startServer() {
     console.error('Unhandled Rejection at:', promise, 'reason:', reason);
   });
 
-  // Handle uncaught exceptions  
+  // Handle uncaught exceptions
   process.on('uncaughtException', (error) => {
     console.error('Uncaught Exception:', error);
     process.exit(1);
