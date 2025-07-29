@@ -34,13 +34,15 @@ async function startServer() {
   const app = express();
 
   const corsOption = {
-    origin: process.env.ALLOWED_ORIGINS ? process.env.ALLOWED_ORIGINS.split(',') : [
-      'http://localhost:3000',
-      'http://localhost:3001',
-      'http://localhost:3002',
-      'http://localhost:3003',
-      'https://educationelly-server-graphql-5b9748151d5a.herokuapp.com'
-    ],
+    origin: process.env.NODE_ENV === 'development' ? true : (
+      process.env.ALLOWED_ORIGINS ? process.env.ALLOWED_ORIGINS.split(',') : [
+        'http://localhost:3000',
+        'http://localhost:3001',
+        'http://localhost:3002',
+        'http://localhost:3003',
+        'https://educationelly-server-graphql-5b9748151d5a.herokuapp.com'
+      ]
+    ),
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true,
   };
