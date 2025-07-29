@@ -95,7 +95,19 @@ async function startServer() {
         stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
       });
 
+      // Allow specific user-facing errors to pass through in production
+      const userFacingErrors = [
+        'Student not found',
+        'Invalid student ID format',
+        'Cannot delete student: This student has related records that must be deleted first',
+        'You are not authenticated as a user',
+        'Your session has expired. Please sign in again.'
+      ];
+
       if (process.env.NODE_ENV === 'production') {
+        if (userFacingErrors.includes(error.message)) {
+          return formattedError;
+        }
         return new GraphQLError('Internal server error', {
           extensions: {
             code: 'INTERNAL_SERVER_ERROR',
