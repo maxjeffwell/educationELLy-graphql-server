@@ -88,11 +88,13 @@ async function startServer() {
     playground: true,
     plugins: [ApolloServerPluginDrainHttpServer({ httpServer })],
     formatError: (formattedError, error) => {
-      console.error('GraphQL Error:', {
+      console.error('GraphQL Error Details:', {
         message: error.message,
+        originalMessage: error.originalError?.message,
         locations: error.locations,
         path: error.path,
-        stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
+        stack: process.env.NODE_ENV === 'development' ? error.stack : undefined,
+        extensions: error.extensions
       });
 
       // Allow specific user-facing errors to pass through in production
@@ -104,10 +106,20 @@ async function startServer() {
         'Your session has expired. Please sign in again.'
       ];
 
+      // Check both error.message and originalError.message
+      const errorMessage = error.message || error.originalError?.message || '';
+      
+      console.log('Checking error message:', errorMessage);
+      console.log('User facing errors:', userFacingErrors);
+      console.log('Is user facing?', userFacingErrors.includes(errorMessage));
+      console.log('NODE_ENV:', process.env.NODE_ENV);
+
       if (process.env.NODE_ENV === 'production') {
-        if (userFacingErrors.includes(error.message)) {
+        if (userFacingErrors.includes(errorMessage)) {
+          console.log('Allowing user-facing error through:', errorMessage);
           return formattedError;
         }
+        console.log('Masking error as internal server error');
         return new GraphQLError('Internal server error', {
           extensions: {
             code: 'INTERNAL_SERVER_ERROR',
