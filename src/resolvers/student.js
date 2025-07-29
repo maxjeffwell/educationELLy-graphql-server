@@ -17,9 +17,14 @@ export default {
     updateStudent: combineResolvers(
       isAuthenticated,
       async (parent, { _id, input }, { models }) => {
+        // Filter out null and undefined values to prevent overwriting required fields
+        const filteredInput = Object.fromEntries(
+          Object.entries(input).filter(([key, value]) => value !== null && value !== undefined)
+        );
+
         const student = await models.Student.findByIdAndUpdate(
           _id,
-          { $set: input },
+          { $set: filteredInput },
           { new: true, runValidators: true }
         );
 
