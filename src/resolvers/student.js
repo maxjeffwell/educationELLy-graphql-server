@@ -48,8 +48,33 @@ export default {
     deleteStudent: combineResolvers(
       isAuthenticated,
       async (parent, { _id }, { models }) => {
-        const deletedStudent = await models.Student.findOneAndDelete({ _id }).exec();
-        return !!deletedStudent;
+        try {
+          const student = await models.Student.findById(_id);
+          
+          if (!student) {
+            throw new Error('Student not found');
+          }
+          
+          const deletedStudent = await models.Student.findOneAndDelete({ _id }).exec();
+          
+          if (!deletedStudent) {
+            throw new Error('Failed to delete student');
+          }
+          
+          return true;
+        } catch (error) {
+          console.error('DeleteStudent error:', error);
+          
+          if (error.name === 'MongoServerError' && error.code === 66) {
+            throw new Error('Cannot delete student: This student has related records that must be deleted first');
+          }
+          
+          if (error.message === 'Student not found') {
+            throw error;
+          }
+          
+          throw new Error(`Failed to delete student: ${error.message}`);
+        }
       }
     ),
 
