@@ -6,18 +6,18 @@ export default {
   Query: {
     students: combineResolvers(
       isAuthenticated,
-      async () => await Student.find({}).exec()
+      async (parent, args, { models }) => await models.Student.find({}).exec()
     ),
     student: combineResolvers(
       isAuthenticated,
-      async (parent, { _id }, ctx) => await ctx.models.Student.findById(_id).exec()),
+      async (parent, { _id }, { models }) => await models.Student.findById(_id).exec()),
   },
 
   Mutation: {
     updateStudent: combineResolvers(
       isAuthenticated,
-      async (parent, { _id, input }, ctx) => {
-        const student = await ctx.models.Student.findByIdAndUpdate(
+      async (parent, { _id, input }, { models }) => {
+        const student = await models.Student.findByIdAndUpdate(
           _id,
           { $set: input },
           { new: true, runValidators: true }
@@ -40,7 +40,7 @@ export default {
 
     createStudent: combineResolvers(
       isAuthenticated,
-      async (parent, args, ctx) => await ctx.models.Student.create(args.input)),
+      async (parent, args, { models }) => await models.Student.create(args.input)),
   },
 };
 
