@@ -49,6 +49,11 @@ export default {
       isAuthenticated,
       async (parent, { _id }, { models }) => {
         try {
+          // Validate ObjectId format first
+          if (!_id || !_id.match(/^[0-9a-fA-F]{24}$/)) {
+            throw new Error('Invalid student ID format');
+          }
+
           const student = await models.Student.findById(_id);
           
           if (!student) {
@@ -65,11 +70,16 @@ export default {
         } catch (error) {
           console.error('DeleteStudent error:', error);
           
+          // Handle Mongoose validation errors
+          if (error.name === 'CastError') {
+            throw new Error('Invalid student ID format');
+          }
+          
           if (error.name === 'MongoServerError' && error.code === 66) {
             throw new Error('Cannot delete student: This student has related records that must be deleted first');
           }
           
-          if (error.message === 'Student not found') {
+          if (error.message === 'Student not found' || error.message === 'Invalid student ID format') {
             throw error;
           }
           
