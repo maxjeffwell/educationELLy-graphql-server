@@ -1,0 +1,263 @@
+
+> educationelly-graphql-server@1.0.0 start
+> babel-node src/index.js
+
+🚀 Apollo Server ready at http://localhost:8000/graphql
+📊 Health check available at http://localhost:8000/health
+🌍 Environment: development
+🗄️ Database: Connected
+[0mGET /health [32m200[0m 1.935 ms - 54[0m
+[0mPOST /graphql [32m200[0m 8.052 ms - 32[0m
+[0mPOST /graphql [32m200[0m 2.952 ms - 21[0m
+GraphQL Error Details: {
+  message: 'You have entered invalid login credentials',
+  originalMessage: 'You have entered invalid login credentials',
+  locations: [ { line: 2, column: 3 } ],
+  path: [ 'signIn' ],
+  stack: 'GraphQLError: You have entered invalid login credentials\n' +
+    '    at Object.signIn (/home/maxjeffwell/GitHub_Projects/educationELLy-graphql/educationELLy-graphql-server/src/resolvers/user.js:35:15)\n' +
+    '    at processTicksAndRejections (node:internal/process/task_queues:105:5)',
+  extensions: { code: 'BAD_USER_INPUT' }
+}
+Checking error message: You have entered invalid login credentials
+User facing errors: [
+  'Student not found',
+  'Invalid student ID format',
+  'Cannot delete student: This student has related records that must be deleted first',
+  'You are not authenticated as a user',
+  'Your session has expired. Please sign in again.'
+]
+Is user facing? false
+NODE_ENV: development
+[0mPOST /graphql [32m200[0m 11.014 ms - 464[0m
+GraphQL Error Details: {
+  message: 'You have entered invalid login credentials',
+  originalMessage: 'You have entered invalid login credentials',
+  locations: [ { line: 2, column: 3 } ],
+  path: [ 'signIn' ],
+  stack: 'GraphQLError: You have entered invalid login credentials\n' +
+    '    at Object.signIn (/home/maxjeffwell/GitHub_Projects/educationELLy-graphql/educationELLy-graphql-server/src/resolvers/user.js:35:15)\n' +
+    '    at processTicksAndRejections (node:internal/process/task_queues:105:5)',
+  extensions: { code: 'BAD_USER_INPUT' }
+}
+Checking error message: You have entered invalid login credentials
+User facing errors: [
+  'Student not found',
+  'Invalid student ID format',
+  'Cannot delete student: This student has related records that must be deleted first',
+  'You are not authenticated as a user',
+  'Your session has expired. Please sign in again.'
+]
+Is user facing? false
+NODE_ENV: development
+[0mPOST /graphql [32m200[0m 10.473 ms - 464[0m
+[0mPOST /graphql [32m200[0m 1.385 ms - 21[0m
+GraphQL Error Details: {
+  message: 'You have entered invalid login credentials',
+  originalMessage: 'You have entered invalid login credentials',
+  locations: [ { line: 2, column: 3 } ],
+  path: [ 'signIn' ],
+  stack: 'GraphQLError: You have entered invalid login credentials\n' +
+    '    at Object.signIn (/home/maxjeffwell/GitHub_Projects/educationELLy-graphql/educationELLy-graphql-server/src/resolvers/user.js:35:15)\n' +
+    '    at processTicksAndRejections (node:internal/process/task_queues:105:5)',
+  extensions: { code: 'BAD_USER_INPUT' }
+}
+Checking error message: You have entered invalid login credentials
+User facing errors: [
+  'Student not found',
+  'Invalid student ID format',
+  'Cannot delete student: This student has related records that must be deleted first',
+  'You are not authenticated as a user',
+  'Your session has expired. Please sign in again.'
+]
+Is user facing? false
+NODE_ENV: development
+[0mPOST /graphql [32m200[0m 2.424 ms - 464[0m
+[0mPOST /graphql [32m200[0m 308.948 ms - 241[0m
+[0mPOST /graphql [32m200[0m 298.129 ms - 241[0m
+[0mPOST /graphql [32m200[0m 267.722 ms - 262[0m
+[0mPOST /graphql [32m200[0m 5.818 ms - 99[0m
+[0mPOST /graphql [32m200[0m 8.160 ms - 3428[0m
+GraphQL Error Details: {
+  message: 'Field "deleteStudent" must not have a selection since type "Boolean!" has no subfields.',
+  originalMessage: 'Field "deleteStudent" must not have a selection since type "Boolean!" has no subfields.',
+  locations: [ { line: 2, column: 28 } ],
+  path: undefined,
+  stack: 'GraphQLError: Field "deleteStudent" must not have a selection since type "Boolean!" has no subfields.\n' +
+    '    at Object.Field (/home/maxjeffwell/GitHub_Projects/educationELLy-graphql/educationELLy-graphql-server/node_modules/graphql/validation/rules/ScalarLeafsRule.js:32:15)\n' +
+    '    at Object.enter (/home/maxjeffwell/GitHub_Projects/educationELLy-graphql/educationELLy-graphql-server/node_modules/graphql/language/visitor.js:298:32)\n' +
+    '    at Object.enter (/home/maxjeffwell/GitHub_Projects/educationELLy-graphql/educationELLy-graphql-server/node_modules/graphql/utilities/TypeInfo.js:391:27)\n' +
+    '    at visit (/home/maxjeffwell/GitHub_Projects/educationELLy-graphql/educationELLy-graphql-server/node_modules/graphql/language/visitor.js:194:21)\n' +
+    '    at validate (/home/maxjeffwell/GitHub_Projects/educationELLy-graphql/educationELLy-graphql-server/node_modules/graphql/validation/validate.js:91:24)\n' +
+    '    at processGraphQLRequest (/home/maxjeffwell/GitHub_Projects/educationELLy-graphql/educationELLy-graphql-server/node_modules/@apollo/server/src/requestPipeline.ts:246:38)\n' +
+    '    at processTicksAndRejections (node:internal/process/task_queues:105:5)\n' +
+    '    at internalExecuteOperation (/home/maxjeffwell/GitHub_Projects/educationELLy-graphql/educationELLy-graphql-server/node_modules/@apollo/server/src/ApolloServer.ts:1334:12)\n' +
+    '    at runHttpQuery (/home/maxjeffwell/GitHub_Projects/educationELLy-graphql/educationELLy-graphql-server/node_modules/@apollo/server/src/runHttpQuery.ts:232:27)\n' +
+    '    at runPotentiallyBatchedHttpQuery (/home/maxjeffwell/GitHub_Projects/educationELLy-graphql/educationELLy-graphql-server/node_modules/@apollo/server/src/httpBatching.ts:85:12)\n' +
+    '    at ApolloServer.executeHTTPGraphQLRequest (/home/maxjeffwell/GitHub_Projects/educationELLy-graphql/educationELLy-graphql-server/node_modules/@apollo/server/src/ApolloServer.ts:1109:14)',
+  extensions: {
+    http: { status: 400, headers: [HeaderMap [Map]] },
+    code: 'GRAPHQL_VALIDATION_FAILED'
+  }
+}
+Checking error message: Field "deleteStudent" must not have a selection since type "Boolean!" has no subfields.
+User facing errors: [
+  'Student not found',
+  'Invalid student ID format',
+  'Cannot delete student: This student has related records that must be deleted first',
+  'You are not authenticated as a user',
+  'Your session has expired. Please sign in again.'
+]
+Is user facing? false
+NODE_ENV: development
+[0mPOST /graphql [33m400[0m 16.599 ms - 2088[0m
+[0mPOST /graphql [32m200[0m 0.918 ms - 21[0m
+[0mPOST /graphql [32m200[0m 257.113 ms - 262[0m
+[0mPOST /graphql [32m200[0m 4.205 ms - 99[0m
+[0mPOST /graphql [32m200[0m 5.012 ms - 3428[0m
+[0mPOST /graphql [32m200[0m 13.274 ms - 32[0m
+[0mPOST /graphql [32m200[0m 7.002 ms - 3195[0m
+[0mPOST /graphql [32m200[0m 0.705 ms - 21[0m
+[0mPOST /graphql [32m200[0m 3.067 ms - 99[0m
+[0mPOST /graphql [32m200[0m 4.464 ms - 3195[0m
+[0mPOST /graphql [32m200[0m 0.498 ms - 21[0m
+[0mPOST /graphql [32m200[0m 4.329 ms - 21[0m
+GraphQL Error Details: {
+  message: 'You have entered invalid login credentials',
+  originalMessage: 'You have entered invalid login credentials',
+  locations: [ { line: 2, column: 3 } ],
+  path: [ 'signIn' ],
+  stack: 'GraphQLError: You have entered invalid login credentials\n' +
+    '    at Object.signIn (/home/maxjeffwell/GitHub_Projects/educationELLy-graphql/educationELLy-graphql-server/src/resolvers/user.js:35:15)\n' +
+    '    at processTicksAndRejections (node:internal/process/task_queues:105:5)',
+  extensions: { code: 'BAD_USER_INPUT' }
+}
+Checking error message: You have entered invalid login credentials
+User facing errors: [
+  'Student not found',
+  'Invalid student ID format',
+  'Cannot delete student: This student has related records that must be deleted first',
+  'You are not authenticated as a user',
+  'Your session has expired. Please sign in again.'
+]
+Is user facing? false
+NODE_ENV: development
+[0mPOST /graphql [32m200[0m 17.553 ms - 464[0m
+GraphQL Error Details: {
+  message: 'You have entered invalid login credentials',
+  originalMessage: 'You have entered invalid login credentials',
+  locations: [ { line: 2, column: 3 } ],
+  path: [ 'signIn' ],
+  stack: 'GraphQLError: You have entered invalid login credentials\n' +
+    '    at Object.signIn (/home/maxjeffwell/GitHub_Projects/educationELLy-graphql/educationELLy-graphql-server/src/resolvers/user.js:35:15)\n' +
+    '    at processTicksAndRejections (node:internal/process/task_queues:105:5)',
+  extensions: { code: 'BAD_USER_INPUT' }
+}
+Checking error message: You have entered invalid login credentials
+User facing errors: [
+  'Student not found',
+  'Invalid student ID format',
+  'Cannot delete student: This student has related records that must be deleted first',
+  'You are not authenticated as a user',
+  'Your session has expired. Please sign in again.'
+]
+Is user facing? false
+NODE_ENV: development
+[0mPOST /graphql [32m200[0m 2.335 ms - 464[0m
+GraphQL Error Details: {
+  message: 'You have entered invalid login credentials',
+  originalMessage: 'You have entered invalid login credentials',
+  locations: [ { line: 2, column: 3 } ],
+  path: [ 'signIn' ],
+  stack: 'GraphQLError: You have entered invalid login credentials\n' +
+    '    at Object.signIn (/home/maxjeffwell/GitHub_Projects/educationELLy-graphql/educationELLy-graphql-server/src/resolvers/user.js:35:15)\n' +
+    '    at processTicksAndRejections (node:internal/process/task_queues:105:5)',
+  extensions: { code: 'BAD_USER_INPUT' }
+}
+Checking error message: You have entered invalid login credentials
+User facing errors: [
+  'Student not found',
+  'Invalid student ID format',
+  'Cannot delete student: This student has related records that must be deleted first',
+  'You are not authenticated as a user',
+  'Your session has expired. Please sign in again.'
+]
+Is user facing? false
+NODE_ENV: development
+[0mPOST /graphql [32m200[0m 2.768 ms - 464[0m
+GraphQL Error Details: {
+  message: 'You have entered invalid login credentials',
+  originalMessage: 'You have entered invalid login credentials',
+  locations: [ { line: 2, column: 3 } ],
+  path: [ 'signIn' ],
+  stack: 'GraphQLError: You have entered invalid login credentials\n' +
+    '    at Object.signIn (/home/maxjeffwell/GitHub_Projects/educationELLy-graphql/educationELLy-graphql-server/src/resolvers/user.js:35:15)\n' +
+    '    at processTicksAndRejections (node:internal/process/task_queues:105:5)',
+  extensions: { code: 'BAD_USER_INPUT' }
+}
+Checking error message: You have entered invalid login credentials
+User facing errors: [
+  'Student not found',
+  'Invalid student ID format',
+  'Cannot delete student: This student has related records that must be deleted first',
+  'You are not authenticated as a user',
+  'Your session has expired. Please sign in again.'
+]
+Is user facing? false
+NODE_ENV: development
+[0mPOST /graphql [32m200[0m 2.386 ms - 464[0m
+GraphQL Error Details: {
+  message: 'Unknown argument "username" on field "Mutation.signUp".',
+  originalMessage: 'Unknown argument "username" on field "Mutation.signUp".',
+  locations: [ { line: 2, column: 10 } ],
+  path: undefined,
+  stack: 'GraphQLError: Unknown argument "username" on field "Mutation.signUp".\n' +
+    '    at Object.Argument (/home/maxjeffwell/GitHub_Projects/educationELLy-graphql/educationELLy-graphql-server/node_modules/graphql/validation/rules/KnownArgumentNamesRule.js:46:11)\n' +
+    '    at Object.enter (/home/maxjeffwell/GitHub_Projects/educationELLy-graphql/educationELLy-graphql-server/node_modules/graphql/language/visitor.js:298:32)\n' +
+    '    at Object.enter (/home/maxjeffwell/GitHub_Projects/educationELLy-graphql/educationELLy-graphql-server/node_modules/graphql/utilities/TypeInfo.js:391:27)\n' +
+    '    at visit (/home/maxjeffwell/GitHub_Projects/educationELLy-graphql/educationELLy-graphql-server/node_modules/graphql/language/visitor.js:194:21)\n' +
+    '    at validate (/home/maxjeffwell/GitHub_Projects/educationELLy-graphql/educationELLy-graphql-server/node_modules/graphql/validation/validate.js:91:24)\n' +
+    '    at processGraphQLRequest (/home/maxjeffwell/GitHub_Projects/educationELLy-graphql/educationELLy-graphql-server/node_modules/@apollo/server/src/requestPipeline.ts:246:38)\n' +
+    '    at processTicksAndRejections (node:internal/process/task_queues:105:5)\n' +
+    '    at internalExecuteOperation (/home/maxjeffwell/GitHub_Projects/educationELLy-graphql/educationELLy-graphql-server/node_modules/@apollo/server/src/ApolloServer.ts:1334:12)\n' +
+    '    at runHttpQuery (/home/maxjeffwell/GitHub_Projects/educationELLy-graphql/educationELLy-graphql-server/node_modules/@apollo/server/src/runHttpQuery.ts:232:27)\n' +
+    '    at runPotentiallyBatchedHttpQuery (/home/maxjeffwell/GitHub_Projects/educationELLy-graphql/educationELLy-graphql-server/node_modules/@apollo/server/src/httpBatching.ts:85:12)\n' +
+    '    at ApolloServer.executeHTTPGraphQLRequest (/home/maxjeffwell/GitHub_Projects/educationELLy-graphql/educationELLy-graphql-server/node_modules/@apollo/server/src/ApolloServer.ts:1109:14)',
+  extensions: {
+    http: { status: 400, headers: [HeaderMap [Map]] },
+    code: 'GRAPHQL_VALIDATION_FAILED'
+  }
+}
+Checking error message: Unknown argument "username" on field "Mutation.signUp".
+User facing errors: [
+  'Student not found',
+  'Invalid student ID format',
+  'Cannot delete student: This student has related records that must be deleted first',
+  'You are not authenticated as a user',
+  'Your session has expired. Please sign in again.'
+]
+Is user facing? false
+NODE_ENV: development
+[0mPOST /graphql [33m400[0m 6.681 ms - 2034[0m
+GraphQL Error Details: {
+  message: 'You have entered invalid login credentials',
+  originalMessage: 'You have entered invalid login credentials',
+  locations: [ { line: 2, column: 3 } ],
+  path: [ 'signIn' ],
+  stack: 'GraphQLError: You have entered invalid login credentials\n' +
+    '    at Object.signIn (/home/maxjeffwell/GitHub_Projects/educationELLy-graphql/educationELLy-graphql-server/src/resolvers/user.js:35:15)\n' +
+    '    at processTicksAndRejections (node:internal/process/task_queues:105:5)',
+  extensions: { code: 'BAD_USER_INPUT' }
+}
+Checking error message: You have entered invalid login credentials
+User facing errors: [
+  'Student not found',
+  'Invalid student ID format',
+  'Cannot delete student: This student has related records that must be deleted first',
+  'You are not authenticated as a user',
+  'Your session has expired. Please sign in again.'
+]
+Is user facing? false
+NODE_ENV: development
+[0mPOST /graphql [32m200[0m 3.628 ms - 464[0m
+Killed
