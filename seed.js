@@ -17,6 +17,10 @@ const sampleUsers = [
   {
     email: 'user@educationelly.com',
     password: 'user123456'
+  },
+  {
+    email: 'demo@demo.example',
+    password: 'demopassword'
   }
 ];
 

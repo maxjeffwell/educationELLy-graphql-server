@@ -1,6 +1,24 @@
-# EducationELLy GraphQL Server
+<div align="center">
 
-A modern GraphQL API server built with Apollo Server 4.x, Express, and MongoDB for managing English Language Learner (ELL) student data and educational resources.
+# 🚀 EducationELLy GraphQL Server
+
+<p align="center">
+  <img src="https://img.shields.io/badge/Apollo_Server-4.x-2873b4?style=for-the-badge&logo=apollo-graphql&logoColor=white" alt="Apollo Server" />
+  <img src="https://img.shields.io/badge/Node.js-18+-86c64e?style=for-the-badge&logo=node.js&logoColor=white" alt="Node.js" />
+  <img src="https://img.shields.io/badge/GraphQL-16.11.0-fb9438?style=for-the-badge&logo=graphql&logoColor=white" alt="GraphQL" />
+  <img src="https://img.shields.io/badge/MongoDB-Latest-2873b4?style=for-the-badge&logo=mongodb&logoColor=white" alt="MongoDB" />
+  <img src="https://img.shields.io/badge/License-GNU_GPLv3-86c64e?style=for-the-badge" alt="License" />
+</p>
+
+<p align="center">
+  <strong style="color: #2873b4;">A modern GraphQL API server built with Apollo Server 4.x, Express, and MongoDB</strong>
+</p>
+
+<p align="center">
+  <em style="color: #fb9438;">For managing English Language Learner (ELL) student data and educational resources</em>
+</p>
+
+</div>
 
 ## Table of Contents
 
@@ -19,29 +37,69 @@ A modern GraphQL API server built with Apollo Server 4.x, Express, and MongoDB f
 - [Contributing](#contributing)
 - [License](#license)
 
-## Features
+## 🚀 Features
 
-- **GraphQL API** - Modern GraphQL API built with Apollo Server 4.x
-- **Authentication & Authorization** - JWT-based authentication with role-based access control
-- **Student Management** - Full CRUD operations for managing ELL student records
-- **User Management** - User registration, authentication, and profile management
-- **Data Validation** - Input validation for all mutations
-- **Batch Loading** - Efficient data loading with DataLoader
-- **Real-time Updates** - Support for GraphQL subscriptions (infrastructure ready)
-- **Production Ready** - Configured for deployment on Heroku with production seeding scripts
+<table>
+<tr>
+<td width="50%">
 
-## Tech Stack
+### 🔐 Authentication & Security
+- **JWT Authentication**: Secure token-based authentication system
+- **Role-based Access**: Granular authorization controls
+- **Password Security**: bcryptjs hashing with salt rounds
+- **CORS Protection**: Configurable cross-origin resource sharing
 
-- **Runtime**: Node.js (>=18.0.0)
-- **Framework**: Express.js
-- **GraphQL Server**: Apollo Server 4.x
-- **Database**: MongoDB with Mongoose ODM
-- **Authentication**: JWT (jsonwebtoken)
-- **Password Hashing**: bcryptjs
-- **Data Loading**: DataLoader for batch loading
-- **Development**: Babel for ES6+ support, Nodemon for hot reloading
-- **Testing**: Mocha & Chai
-- **Linting**: ESLint with Airbnb base configuration
+</td>
+<td width="50%">
+
+### 📊 Data Management
+- **Student CRUD**: Complete student lifecycle management
+- **User Management**: Registration and profile operations
+- **Data Validation**: Comprehensive input validation
+- **Batch Loading**: Efficient DataLoader implementations
+
+</td>
+</tr>
+<tr>
+<td width="50%">
+
+### ⚡ Performance & Scalability
+- **Apollo Server 4.x**: Latest GraphQL server technology
+- **MongoDB Integration**: Flexible document-based storage
+- **Optimized Queries**: DataLoader for N+1 query prevention
+- **Production Ready**: Heroku deployment configuration
+
+</td>
+<td width="50%">
+
+### 🛠️ Developer Experience
+- **GraphQL Playground**: Interactive API exploration
+- **Hot Reloading**: Nodemon development server
+- **ES6+ Support**: Modern JavaScript with Babel
+- **Comprehensive Testing**: Mocha & Chai test suite
+
+</td>
+</tr>
+</table>
+
+## 🛠️ Tech Stack
+
+<div align="center">
+
+| **Category** | **Technology** | **Version** | **Purpose** |
+|:---:|:---:|:---:|:---:|
+| **Runtime** | ![Node.js](https://img.shields.io/badge/Node.js-86c64e?style=flat&logo=node.js&logoColor=white) | 18.0.0+ | JavaScript Runtime |
+| **Framework** | ![Express](https://img.shields.io/badge/Express-2873b4?style=flat&logo=express&logoColor=white) | Latest | Web Framework |
+| **GraphQL** | ![Apollo](https://img.shields.io/badge/Apollo_Server-fb9438?style=flat&logo=apollo-graphql&logoColor=white) | 4.x | GraphQL Server |
+| **Database** | ![MongoDB](https://img.shields.io/badge/MongoDB-86c64e?style=flat&logo=mongodb&logoColor=white) | Latest | Document Database |
+| **ODM** | ![Mongoose](https://img.shields.io/badge/Mongoose-2873b4?style=flat&logo=mongodb&logoColor=white) | 8.16.3 | Object Modeling |
+| **Authentication** | ![JWT](https://img.shields.io/badge/JWT-fb9438?style=flat&logo=json-web-tokens&logoColor=white) | 9.0.2 | Token Auth |
+| **Security** | ![bcrypt](https://img.shields.io/badge/bcryptjs-86c64e?style=flat&logo=security&logoColor=white) | 2.4.3 | Password Hashing |
+| **Data Loading** | ![DataLoader](https://img.shields.io/badge/DataLoader-2873b4?style=flat&logo=graphql&logoColor=white) | 1.4.0 | Batch Loading |
+| **Testing** | ![Mocha](https://img.shields.io/badge/Mocha-fb9438?style=flat&logo=mocha&logoColor=white) | 11.7.1 | Test Framework |
+| **Linting** | ![ESLint](https://img.shields.io/badge/ESLint-86c64e?style=flat&logo=eslint&logoColor=white) | 8.57.0 | Code Quality |
+
+</div>
 
 ## Prerequisites
 
@@ -467,25 +525,71 @@ npm run lint:fix
 
 This project is licensed under the GNU GPLv3 License - see the LICENSE file for details.
 
-## Author
+---
 
-Jeff Maxwell <maxjeffwell@gmail.com>
+<div align="center">
 
-## Acknowledgments
+### 📬 Contact
 
-- Built with Apollo Server 4.x
-- Inspired by best practices in GraphQL API design
-- Designed for educational institutions managing ELL students
+<p align="center">
+  <a href="mailto:jeff@el-jefe.me">
+    <img src="https://img.shields.io/badge/Email-jeff@el--jefe.me-fb9438?style=for-the-badge&logo=gmail&logoColor=white" alt="Email" />
+  </a>
+  <a href="https://github.com/maxjeffwell">
+    <img src="https://img.shields.io/badge/GitHub-maxjeffwell-2873b4?style=for-the-badge&logo=github&logoColor=white" alt="GitHub" />
+  </a>
+  <a href="https://www.el-jefe.me">
+    <img src="https://img.shields.io/badge/Portfolio-el--jefe.me-86c64e?style=for-the-badge&logo=internet-explorer&logoColor=white" alt="Portfolio" />
+  </a>
+</p>
+
+</div>
+
+## 🙏 Acknowledgments
+
+<div align="center">
+
+| Technology | Purpose | Recognition |
+|:---:|:---:|:---:|
+| ![Apollo](https://img.shields.io/badge/Apollo_Server_4.x-2873b4?style=flat&logo=apollo-graphql&logoColor=white) | GraphQL Foundation | Modern API Architecture |
+| ![GraphQL](https://img.shields.io/badge/GraphQL_Best_Practices-fb9438?style=flat&logo=graphql&logoColor=white) | Design Patterns | Industry Standards |
+| ![Education](https://img.shields.io/badge/ELL_Education-86c64e?style=flat&logo=education&logoColor=white) | Target Audience | Educational Impact |
+
+</div>
+
+<p align="center">
+  <em style="color: #fb9438;">Built with ❤️ for educators managing English Language Learners worldwide</em>
+</p>
 
 ---
 
-## Metadata
+<div align="center">
 
-**Project**: EducationELLy GraphQL Server  
-**Version**: 1.0.0  
-**Created**: 2024  
-**Last Updated**: January 2025  
-**License**: GNU GPLv3  
-**Repository**: [github.com/maxjeffwell/educationelly-graphql](https://github.com/maxjeffwell/educationelly-graphql)  
-**Technologies**: Node.js, Apollo Server 4.x, Express, MongoDB, GraphQL  
-**Category**: Education Technology, ELL Management System
+### 📊 Project Metadata
+
+<table>
+<tr>
+<td width="50%">
+
+**Project Information**
+- **Name**: EducationELLy GraphQL Server
+- **Version**: 1.0.0
+- **Created**: 2024
+- **Status**: Production Ready
+
+</td>
+<td width="50%">
+
+**Technical Details**
+- **License**: GNU GPLv3
+- **Node.js**: 18.0.0+
+- **Category**: Education Technology
+- **Type**: ELL Management System
+
+</td>
+</tr>
+</table>
+
+**Repository**: [github.com/maxjeffwell/educationelly-graphql](https://github.com/maxjeffwell/educationelly-graphql)
+
+</div>
