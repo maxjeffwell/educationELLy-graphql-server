@@ -39,7 +39,7 @@ async function startServer() {
         'http://localhost:3001',
         'http://localhost:3002',
         'http://localhost:3003',
-        'https://educationelly-server-graphql-5b9748151d5a.herokuapp.com'
+        'https://educationelly-client-graphql-176ac5044d94.herokuapp.com'
       ]
     ),
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
