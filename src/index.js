@@ -11,7 +11,6 @@ import { ApolloServer } from '@apollo/server';
 import { expressMiddleware } from '@apollo/server/express4';
 import { ApolloServerPluginDrainHttpServer } from '@apollo/server/plugin/drainHttpServer';
 import { GraphQLError } from 'graphql';
-import path from 'path';
 
 import mongoose from 'mongoose';
 
@@ -158,13 +157,6 @@ async function startServer() {
       },
     })
   );
-
-  if (process.env.NODE_ENV === 'production') {
-    app.use(express.static('client/build'));
-    app.get('*', (req, res) => {
-      res.sendFile(path.resolve(process.cwd(), 'client', 'build', 'index.html'));
-    });
-  }
 
   const port = process.env.PORT || 8000;
 
