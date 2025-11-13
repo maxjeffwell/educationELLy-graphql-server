@@ -72,6 +72,7 @@ jobs:
           file: ./Dockerfile
           target: production
           push: false
+          load: true
           tags: educationelly-graphql-server:ci-test
           cache-from: type=gha
           cache-to: type=gha,mode=max
@@ -81,6 +82,7 @@ jobs:
           docker run --rm -d --name test-server \
             -e MONGODB_URI=mongodb://test \
             -e JWT_SECRET=test-secret \
+            -e ALLOWED_ORIGINS=http://localhost \
             educationelly-graphql-server:ci-test
 
           # Wait for container to start
