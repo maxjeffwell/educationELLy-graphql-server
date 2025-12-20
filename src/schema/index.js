@@ -2,6 +2,7 @@ import { gql } from 'graphql-tag';
 
 import userSchema from './user';
 import studentSchema from './student';
+import aiSchema from './ai';
 
 const linkSchema = gql`
   scalar Date
@@ -15,4 +16,4 @@ const linkSchema = gql`
   }
 `;
 
-export default [linkSchema, userSchema, studentSchema];
+export default [linkSchema, userSchema, studentSchema, aiSchema];
