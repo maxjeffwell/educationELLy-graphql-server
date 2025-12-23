@@ -19,6 +19,9 @@ import resolvers from './resolvers';
 import models from './models';
 import loaders from './loaders';
 
+// Log AI routes registration
+console.log('AI routes registered successfully');
+
 async function startServer() {
   mongoose.Promise = global.Promise;
 
