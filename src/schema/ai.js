@@ -37,6 +37,35 @@ export default gql`
       count: Int
       gradeLevel: Int
     ): Quiz!
+
+    """
+    Multi-turn conversational chat for educational help
+    """
+    chat(
+      messages: [ChatMessageInput!]!
+      context: ChatContextInput
+    ): ChatResponse!
+  }
+
+  input ChatMessageInput {
+    role: String!
+    content: String!
+  }
+
+  input ChatContextInput {
+    app: String
+    userRole: String
+    gradeLevel: Int
+    ellStatus: String
+    nativeLanguage: String
+    studentId: ID
+  }
+
+  type ChatResponse {
+    success: Boolean!
+    response: String!
+    model: String
+    backend: String
   }
 
   type AIHealth {

@@ -129,6 +129,42 @@ Provide specific, actionable recommendations for improving English language skil
       } catch (error) {
         throw new Error(`Failed to generate quiz: ${error.message}`);
       }
+    },
+
+    chat: async (parent, { messages, context = {} }) => {
+      try {
+        // Default context for educationELLy
+        const chatContext = {
+          app: 'educationelly',
+          ...context
+        };
+
+        const response = await fetch(`${AI_GATEWAY_URL}/api/ai/chat`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            messages,
+            context: chatContext,
+            maxTokens: 512,
+            temperature: 0.7
+          })
+        });
+
+        if (!response.ok) {
+          throw new Error(`AI Gateway error: ${response.status}`);
+        }
+
+        const data = await response.json();
+
+        return {
+          success: true,
+          response: data.response,
+          model: data.model,
+          backend: data.backend
+        };
+      } catch (error) {
+        throw new Error(`Chat failed: ${error.message}`);
+      }
     }
   }
 };
