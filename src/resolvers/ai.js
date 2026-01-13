@@ -139,6 +139,15 @@ Provide specific, actionable recommendations for improving English language skil
           ...context
         };
 
+        const response = await fetch(`${AI_GATEWAY_URL}/api/ai/chat`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            messages,
+            context: chatContext
+          })
+        });
+
         if (!response.ok) {
           const errorText = await response.text();
           console.error('AI Gateway Error Response:', errorText);
