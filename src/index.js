@@ -4,7 +4,7 @@ import cors from 'cors';
 import morgan from 'morgan';
 import http from 'http';
 import jwt from 'jsonwebtoken';
-import { bodyParserGraphQL } from 'body-parser-graphql';
+// import { bodyParserGraphQL } from 'body-parser-graphql';
 import DataLoader from 'dataloader';
 import express from 'express';
 import { ApolloServer } from '@apollo/server';
@@ -49,7 +49,7 @@ async function startServer() {
     credentials: true,
   };
 
-  app.use(bodyParserGraphQL());
+  // app.use(bodyParserGraphQL());
   app.use(cors(corsOption));
   app.use(morgan('dev'));
 
