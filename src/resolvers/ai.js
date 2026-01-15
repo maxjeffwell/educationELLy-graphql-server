@@ -1,3 +1,6 @@
+import { combineResolvers } from 'graphql-resolvers';
+import { isAuthenticated } from './authorization';
+
 const AI_GATEWAY_URL = process.env.AI_GATEWAY_URL || 'http://shared-ai-gateway:8002';
 
 // Use Node.js built-in fetch (available in Node 18+)
@@ -5,6 +8,7 @@ const fetch = global.fetch || require('node-fetch');
 
 export default {
   Query: {
+    // Health check is public
     aiHealth: async () => {
       try {
         const response = await fetch(`${AI_GATEWAY_URL}/health`);
@@ -29,7 +33,9 @@ export default {
   },
 
   Mutation: {
-    generateStudyRecommendations: async (parent, { gradeLevel, compositeLevel, ellStatus, nativeLanguage }) => {
+    generateStudyRecommendations: combineResolvers(
+      isAuthenticated,
+      async (parent, { gradeLevel, compositeLevel, ellStatus, nativeLanguage }) => {
       try {
         const prompt = `Generate 3 study recommendations for an English Language Learner:
 Grade Level: ${gradeLevel}
@@ -67,9 +73,11 @@ Provide specific, actionable recommendations for improving English language skil
       } catch (error) {
         throw new Error(`Failed to generate recommendations: ${error.message}`);
       }
-    },
+    }),
 
-    generateFlashcard: async (parent, { topic, content, gradeLevel }) => {
+    generateFlashcard: combineResolvers(
+      isAuthenticated,
+      async (parent, { topic, content, gradeLevel }) => {
       try {
         const response = await fetch(`${AI_GATEWAY_URL}/api/ai/flashcard`, {
           method: 'POST',
@@ -96,9 +104,11 @@ Provide specific, actionable recommendations for improving English language skil
       } catch (error) {
         throw new Error(`Failed to generate flashcard: ${error.message}`);
       }
-    },
+    }),
 
-    generateQuiz: async (parent, { topic, difficulty = 'medium', count = 3, gradeLevel }) => {
+    generateQuiz: combineResolvers(
+      isAuthenticated,
+      async (parent, { topic, difficulty = 'medium', count = 3, gradeLevel }) => {
       try {
         const fullTopic = gradeLevel ? `${topic} for Grade ${gradeLevel}` : topic;
 
@@ -129,9 +139,11 @@ Provide specific, actionable recommendations for improving English language skil
       } catch (error) {
         throw new Error(`Failed to generate quiz: ${error.message}`);
       }
-    },
+    }),
 
-    chat: async (parent, { messages, context = {} }) => {
+    chat: combineResolvers(
+      isAuthenticated,
+      async (parent, { messages, context = {} }) => {
       try {
         // Default context for educationELLy
         const chatContext = {
@@ -165,6 +177,6 @@ Provide specific, actionable recommendations for improving English language skil
       } catch (error) {
         throw new Error(`Chat failed: ${error.message}`);
       }
-    }
+    })
   }
 };
