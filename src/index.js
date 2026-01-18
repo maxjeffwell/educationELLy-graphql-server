@@ -4,13 +4,13 @@ import cors from 'cors';
 import morgan from 'morgan';
 import http from 'http';
 import jwt from 'jsonwebtoken';
-// import { bodyParserGraphQL } from 'body-parser-graphql';
 import DataLoader from 'dataloader';
 import express from 'express';
 import { ApolloServer } from '@apollo/server';
 import { expressMiddleware } from '@apollo/server/express4';
 import { ApolloServerPluginDrainHttpServer } from '@apollo/server/plugin/drainHttpServer';
 import { GraphQLError } from 'graphql';
+import client from 'prom-client';
 
 import mongoose from 'mongoose';
 
@@ -21,6 +21,25 @@ import loaders from './loaders';
 
 // Log AI routes registration
 console.log('AI routes registered successfully');
+
+// Prometheus metrics setup
+const register = new client.Registry();
+client.collectDefaultMetrics({ register });
+
+const httpRequestsTotal = new client.Counter({
+  name: 'http_requests_total',
+  help: 'Total number of HTTP requests',
+  labelNames: ['method', 'route', 'status'],
+  registers: [register]
+});
+
+const httpRequestDuration = new client.Histogram({
+  name: 'http_request_duration_seconds',
+  help: 'Duration of HTTP requests in seconds',
+  labelNames: ['method', 'route', 'status'],
+  buckets: [0.001, 0.005, 0.015, 0.05, 0.1, 0.2, 0.3, 0.4, 0.5, 1, 2, 5],
+  registers: [register]
+});
 
 async function startServer() {
   mongoose.Promise = global.Promise;
@@ -41,21 +60,39 @@ async function startServer() {
         'http://localhost:3000',
         'http://localhost:3001',
         'http://localhost:3002',
-        'http://localhost:3003',
-        'https://educationelly-client-graphql-176ac5044d94.herokuapp.com'
+        'http://localhost:3003'
       ]
     ),
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true,
   };
 
-  // app.use(bodyParserGraphQL());
   app.use(cors(corsOption));
   app.use(morgan('dev'));
 
-  // Health check endpoint for Heroku
+  // Metrics middleware (before other routes)
+  app.use((req, res, next) => {
+    if (req.path === '/metrics' || req.path === '/health') return next();
+    const start = process.hrtime.bigint();
+    res.on('finish', () => {
+      const duration = Number(process.hrtime.bigint() - start) / 1e9;
+      const route = req.route?.path || req.path || 'unknown';
+      const labels = { method: req.method, route, status: res.statusCode.toString() };
+      httpRequestsTotal.inc(labels);
+      httpRequestDuration.observe(labels, duration);
+    });
+    next();
+  });
+
+  // Health check endpoint
   app.get('/health', (req, res) => {
     res.status(200).json({ status: 'OK', timestamp: new Date().toISOString() });
+  });
+
+  // Prometheus metrics endpoint
+  app.get('/metrics', async (req, res) => {
+    res.set('Content-Type', register.contentType);
+    res.end(await register.metrics());
   });
 
   // Root endpoint
