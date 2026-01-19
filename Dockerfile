@@ -7,9 +7,8 @@ WORKDIR /app
 COPY package*.json ./
 
 # Install all dependencies (babel-node needs dev dependencies in production)
-RUN npm ci --only=production && \
-    npm ci && \
-    npm cache clean --force
+RUN --mount=type=cache,target=/root/.npm \
+    npm ci
 
 # Copy application files
 COPY src ./src
@@ -41,8 +40,9 @@ WORKDIR /app
 # Copy package files
 COPY package*.json ./
 
-# Install all dependencies
-RUN npm install
+# Install all dependencies (BuildKit cache speeds up repeated builds)
+RUN --mount=type=cache,target=/root/.npm \
+    npm ci
 
 # Copy application files
 COPY . .
