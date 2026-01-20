@@ -22,6 +22,83 @@ import loaders from './loaders';
 // Log AI routes registration
 console.log('AI routes registered successfully');
 
+// Server-Timing utility for tracking performance metrics
+class ServerTiming {
+  constructor() {
+    this.timings = [];
+    this.starts = new Map();
+  }
+
+  start(name) {
+    this.starts.set(name, process.hrtime.bigint());
+  }
+
+  end(name, description = '') {
+    const startTime = this.starts.get(name);
+    if (startTime) {
+      const duration = Number(process.hrtime.bigint() - startTime) / 1e6; // ms
+      this.timings.push({ name, duration, description });
+      this.starts.delete(name);
+    }
+  }
+
+  async time(name, description, fn) {
+    this.start(name);
+    try {
+      return await fn();
+    } finally {
+      this.end(name, description);
+    }
+  }
+
+  getHeader() {
+    return this.timings
+      .map(t => {
+        const desc = t.description ? `;desc="${t.description}"` : '';
+        return `${t.name};dur=${t.duration.toFixed(2)}${desc}`;
+      })
+      .join(', ');
+  }
+}
+
+// Apollo plugin for Server-Timing headers
+const serverTimingPlugin = {
+  async requestDidStart() {
+    const timing = new ServerTiming();
+    timing.start('total');
+
+    return {
+      async didResolveOperation(requestContext) {
+        timing.end('total', 'Total request time');
+        timing.start('execution');
+      },
+      async willSendResponse(requestContext) {
+        timing.end('execution', 'GraphQL execution');
+
+        const header = timing.getHeader();
+        if (header && requestContext.response.http) {
+          requestContext.response.http.headers.set('Server-Timing', header);
+        }
+      },
+      async executionDidStart() {
+        return {
+          willResolveField({ info }) {
+            const fieldName = `${info.parentType.name}.${info.fieldName}`;
+            const start = process.hrtime.bigint();
+            return () => {
+              const duration = Number(process.hrtime.bigint() - start) / 1e6;
+              // Only log slow fields (>10ms) to avoid noise
+              if (duration > 10) {
+                console.log(`[Slow Field] ${fieldName}: ${duration.toFixed(2)}ms`);
+              }
+            };
+          },
+        };
+      },
+    };
+  },
+};
+
 // Prometheus metrics setup
 const register = new client.Registry();
 client.collectDefaultMetrics({ register });
@@ -130,7 +207,10 @@ async function startServer() {
     resolvers,
     introspection: true,
     playground: true,
-    plugins: [ApolloServerPluginDrainHttpServer({ httpServer })],
+    plugins: [
+      ApolloServerPluginDrainHttpServer({ httpServer }),
+      serverTimingPlugin,
+    ],
     formatError: (formattedError, error) => {
       console.error('GraphQL Error Details:', {
         message: error.message,
@@ -181,12 +261,23 @@ async function startServer() {
     cors(corsOption),
     express.json(),
     expressMiddleware(server, {
-      context: async ({ req }) => {
+      context: async ({ req, res }) => {
         const me = await getMe(req);
+        const timing = new ServerTiming();
+
+        // Set header on response finish
+        res.on('finish', () => {
+          const header = timing.getHeader();
+          if (header && !res.headersSent) {
+            res.setHeader('Server-Timing', header);
+          }
+        });
+
         return {
           models,
           me,
           secret: process.env.JWT_SECRET,
+          timing, // Expose timing utility to resolvers
           loaders: {
             user: new DataLoader(keys =>
               loaders.user.batchUsers(keys, models)),

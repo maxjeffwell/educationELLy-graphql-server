@@ -6,11 +6,20 @@ export default {
   Query: {
     students: combineResolvers(
       isAuthenticated,
-      async (parent, args, { models }) => await models.Student.find({}).exec()
+      async (parent, args, { models, timing }) => {
+        return timing.time('db-students', 'MongoDB students query', () =>
+          models.Student.find({})
+        );
+      }
     ),
     student: combineResolvers(
       isAuthenticated,
-      async (parent, { _id }, { models }) => await models.Student.findById(_id).exec()),
+      async (parent, { _id }, { models, timing }) => {
+        return timing.time('db-student', 'MongoDB student lookup', () =>
+          models.Student.findById(_id)
+        );
+      }
+    ),
   },
 
   Mutation: {
