@@ -63,25 +63,30 @@ class ServerTiming {
 
 // Apollo plugin for Server-Timing headers
 const serverTimingPlugin = {
-  async requestDidStart() {
+  async requestDidStart({ request, contextValue }) {
     const timing = new ServerTiming();
-    timing.start('total');
+    const startTime = process.hrtime.bigint();
 
     return {
-      async didResolveOperation(requestContext) {
-        timing.end('total', 'Total request time');
-        timing.start('execution');
-      },
-      async willSendResponse(requestContext) {
-        timing.end('execution', 'GraphQL execution');
+      async willSendResponse({ response }) {
+        // Calculate total time at the end
+        const totalDuration = Number(process.hrtime.bigint() - startTime) / 1e6;
+        timing.timings.push({ name: 'total', duration: totalDuration, description: 'Total request time' });
 
         const header = timing.getHeader();
-        if (header && requestContext.response.http) {
-          requestContext.response.http.headers.set('Server-Timing', header);
+        if (header) {
+          // Set header on Apollo's response object
+          if (response.http?.headers) {
+            response.http.headers.set('Server-Timing', header);
+          }
         }
       },
       async executionDidStart() {
+        timing.start('execution');
         return {
+          async executionDidEnd() {
+            timing.end('execution', 'GraphQL execution');
+          },
           willResolveField({ info }) {
             const fieldName = `${info.parentType.name}.${info.fieldName}`;
             const start = process.hrtime.bigint();
