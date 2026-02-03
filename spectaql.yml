@@ -8,20 +8,20 @@ spectaql:
   # Favicon (optional)
   # faviconFile: ./docs/favicon.png
 
-  # Theme customization
-  themeDir: null
+  # Theme customization (optional)
+  # themeDir: ./theme
 
 introspection:
-  # URL to the GraphQL endpoint for introspection
+  # Use schema file for offline generation (no running server required)
+  schemaFile: ./schema.graphql
+
+  # Alternatively, URL to the GraphQL endpoint for introspection
   # Start the server first with: npm run dev
-  url: http://localhost:8000/graphql
+  # url: http://localhost:8000/graphql
 
   # Headers to send with introspection request (if auth required)
   # headers:
   #   Authorization: 'Bearer <token>'
-
-  # Alternatively, use schema file (for offline generation)
-  # schemaFile: ./schema.graphql
 
   # Remove deprecated fields from documentation
   removeTrailingPeriodFromDescriptions: false
@@ -77,5 +77,5 @@ extensions:
   # Show examples in the documentation
   generateExamples: true
 
-  # Group operations by type
-  groupByDirective: null
+  # Group operations by type (optional)
+  # groupByDirective: @group

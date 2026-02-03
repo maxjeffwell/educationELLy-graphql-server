@@ -1,0 +1,356 @@
+"""
+Custom scalar representing a date/time value.
+Serialized as an ISO 8601 date string (e.g., "2024-01-15T10:30:00.000Z").
+"""
+scalar Date
+
+type Query {
+  """
+  Retrieve all users in the system. Requires admin privileges.
+  """
+  users: [User!]!
+
+  """
+  Retrieve a specific user by their unique identifier.
+  """
+  user(
+    "The unique identifier of the user to retrieve"
+    _id: ID!
+  ): User
+
+  """
+  Retrieve the currently authenticated user's profile.
+  Returns null if not authenticated.
+  """
+  me: User
+
+  """
+  Retrieve all students belonging to the authenticated user.
+  Returns an empty array if no students exist.
+  """
+  students: [Student!]!
+
+  """
+  Retrieve a specific student by their unique identifier.
+  Only returns students belonging to the authenticated user.
+  """
+  student(
+    "The unique identifier of the student to retrieve"
+    _id: ID!
+  ): Student
+
+  """
+  Check AI Gateway health status
+  """
+  aiHealth: AIHealth!
+}
+
+type Mutation {
+  """
+  Create a new user account. Sets an httpOnly authentication cookie and returns success status.
+  The cookie is automatically sent with subsequent requests when using credentials: 'include'.
+  """
+  signUp(
+    "Valid email address (must be unique)"
+    email: String!
+    "Password for the account (minimum 8 characters recommended)"
+    password: String!
+  ): AuthPayload!
+
+  """
+  Authenticate an existing user. Sets an httpOnly authentication cookie and returns success status.
+  The cookie is automatically sent with subsequent requests when using credentials: 'include'.
+  """
+  signIn(
+    "Email address used during registration"
+    login: String!
+    "Account password"
+    password: String!
+  ): AuthPayload!
+
+  """
+  Sign out the current user by clearing the authentication cookie.
+  Returns true if sign out was successful.
+  """
+  signOut: Boolean!
+
+  """
+  Create a new student record. The student will be associated with the authenticated user.
+  """
+  createStudent(
+    "Student information for the new record"
+    input: NewStudentInput!
+  ): Student!
+
+  """
+  Update an existing student's information. Only the owner can update their students.
+  """
+  updateStudent(
+    "The unique identifier of the student to update"
+    _id: ID!
+    "Fields to update (only provided fields will be modified)"
+    input: UpdateStudentInput!
+  ): Student!
+
+  """
+  Permanently delete a student record. This action cannot be undone.
+  """
+  deleteStudent(
+    "The unique identifier of the student to delete"
+    _id: ID!
+  ): Boolean!
+
+  """
+  Generate personalized study recommendations for a student
+  """
+  generateStudyRecommendations(
+    gradeLevel: Int!
+    compositeLevel: String
+    ellStatus: String
+    nativeLanguage: String
+  ): StudyRecommendations!
+
+  """
+  Generate educational flashcard
+  """
+  generateFlashcard(
+    topic: String!
+    content: String!
+    gradeLevel: Int
+  ): Flashcard!
+
+  """
+  Generate quiz questions
+  """
+  generateQuiz(
+    topic: String!
+    difficulty: String
+    count: Int
+    gradeLevel: Int
+  ): Quiz!
+
+  """
+  Multi-turn conversational chat for educational help
+  """
+  chat(
+    messages: [ChatMessageInput!]!
+    context: ChatContextInput
+  ): ChatResponse!
+}
+
+"""
+Authentication response returned after successful sign-up or sign-in.
+An httpOnly cookie is automatically set for secure authentication.
+"""
+type AuthPayload {
+  "Whether authentication was successful"
+  success: Boolean!
+  "The authenticated user's information"
+  user: User!
+}
+
+"""
+@deprecated Use AuthPayload instead. Kept for backward compatibility.
+"""
+type Token {
+  "JWT token string (expires in 24 hours) - deprecated: use cookie-based auth"
+  token: String!
+}
+
+"""
+Represents a user account in the EducationELLy system.
+Users can manage their own students and access AI-powered educational features.
+"""
+type User {
+  "Unique identifier for the user"
+  _id: ID!
+  "User's email address (used for authentication)"
+  email: String!
+  "Timestamp when the user account was created"
+  createdAt: Date!
+  "Timestamp when the user account was last modified"
+  updatedAt: Date!
+}
+
+"""
+Represents an English Language Learner (ELL) student in the system.
+Contains demographic information, educational status, and language proficiency data.
+"""
+type Student {
+  "Unique identifier for the student"
+  _id: ID!
+  "Student's full legal name"
+  fullName: String!
+  "Name of the school the student attends"
+  school: String
+  "Name of the student's primary teacher"
+  teacher: String
+  "Student's date of birth"
+  dateOfBirth: Date
+  "Student's gender identity"
+  gender: String
+  "Student's race or ethnicity"
+  race: String
+  "Current grade level (e.g., 'K', '1', '2', ... '12')"
+  gradeLevel: String
+  "Student's native/first language (e.g., 'Spanish', 'Mandarin', 'Arabic')"
+  nativeLanguage: String
+  "City where the student was born"
+  cityOfBirth: String
+  "English Language Learner status (e.g., 'Active ELL', 'Exited', 'Monitoring')"
+  ellStatus: String
+  "Overall English proficiency composite level (e.g., 'Beginning', 'Intermediate', 'Advanced')"
+  compositeLevel: String
+  "Whether the student is currently active in the program"
+  active: Boolean
+  "Special program designation or classification"
+  designation: String
+  "Country where the student was born"
+  countryOfBirth: String
+  "Timestamp when the student record was created"
+  createdAt: Date!
+  "Timestamp when the student record was last modified"
+  updatedAt: Date!
+}
+
+"""
+Input for updating an existing student. All fields are optional;
+only provided fields will be updated.
+"""
+input UpdateStudentInput {
+  "Student's full legal name"
+  fullName: String
+  "Name of the school the student attends"
+  school: String
+  "Name of the student's primary teacher"
+  teacher: String
+  "Student's date of birth"
+  dateOfBirth: Date
+  "Student's gender identity"
+  gender: String
+  "Student's race or ethnicity"
+  race: String
+  "Current grade level (e.g., 'K', '1', '2', ... '12')"
+  gradeLevel: String
+  "Student's native/first language"
+  nativeLanguage: String
+  "City where the student was born"
+  cityOfBirth: String
+  "English Language Learner status"
+  ellStatus: String
+  "Overall English proficiency composite level"
+  compositeLevel: String
+  "Whether the student is currently active in the program"
+  active: Boolean
+  "Special program designation or classification"
+  designation: String
+  "Country where the student was born"
+  countryOfBirth: String
+}
+
+"""
+Input for creating a new student. Only fullName is required;
+other fields can be added later via updateStudent.
+"""
+input NewStudentInput {
+  "Student's full legal name (required)"
+  fullName: String!
+  "Name of the school the student attends"
+  school: String
+  "Name of the student's primary teacher"
+  teacher: String
+  "Student's date of birth"
+  dateOfBirth: Date
+  "Student's gender identity"
+  gender: String
+  "Student's race or ethnicity"
+  race: String
+  "Current grade level (e.g., 'K', '1', '2', ... '12')"
+  gradeLevel: String
+  "Student's native/first language"
+  nativeLanguage: String
+  "City where the student was born"
+  cityOfBirth: String
+  "English Language Learner status"
+  ellStatus: String
+  "Overall English proficiency composite level"
+  compositeLevel: String
+  "Whether the student is currently active in the program"
+  active: Boolean
+  "Special program designation or classification"
+  designation: String
+  "Country where the student was born"
+  countryOfBirth: String
+}
+
+input ChatMessageInput {
+  role: String!
+  content: String!
+}
+
+input ChatContextInput {
+  app: String
+  userRole: String
+  gradeLevel: Int
+  ellStatus: String
+  nativeLanguage: String
+  studentId: ID
+}
+
+type ChatResponse {
+  success: Boolean!
+  response: String!
+  model: String
+  backend: String
+}
+
+type AIHealth {
+  success: Boolean!
+  gateway: GatewayHealth
+  error: String
+}
+
+type GatewayHealth {
+  status: String!
+  gateway: String
+  backend: BackendHealth
+}
+
+type BackendHealth {
+  status: String
+  model_loaded: Boolean
+}
+
+type StudyRecommendations {
+  success: Boolean!
+  recommendations: String!
+  student: StudentContext!
+}
+
+type StudentContext {
+  gradeLevel: Int!
+  compositeLevel: String
+  ellStatus: String
+}
+
+type Flashcard {
+  success: Boolean!
+  topic: String!
+  question: String!
+  answer: String!
+  gradeLevel: Int
+}
+
+type Quiz {
+  success: Boolean!
+  topic: String!
+  difficulty: String!
+  gradeLevel: Int
+  count: Int!
+  questions: [QuizQuestion!]!
+}
+
+type QuizQuestion {
+  question: String!
+  answer: String!
+}
