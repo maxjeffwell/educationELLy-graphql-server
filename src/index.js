@@ -1,5 +1,10 @@
 import '@babel/polyfill';
 import 'dotenv/config';
+
+// Initialize Sentry before other imports for proper error tracking
+import { initSentry, captureException, setUser, flush as flushSentry } from './utils/sentry';
+initSentry();
+
 import cors from 'cors';
 import morgan from 'morgan';
 import helmet from 'helmet';
@@ -28,6 +33,7 @@ import schema from './schema';
 import resolvers from './resolvers';
 import models from './models';
 import loaders from './loaders';
+import { sentryApolloPlugin } from './utils/sentryApolloPlugin';
 
 // Query complexity and depth limits configuration
 const QUERY_DEPTH_LIMIT = 7; // Maximum nesting depth
@@ -397,19 +403,11 @@ async function startServer() {
       ApolloServerPluginDrainHttpServer({ httpServer }),
       serverTimingPlugin,
       createQueryComplexityPlugin(executableSchema),
+      sentryApolloPlugin,
     ],
     validationRules: getValidationRules(),
     formatError: (formattedError, error) => {
-      // Log errors in development only
-      if (process.env.NODE_ENV === 'development') {
-        console.error('GraphQL Error:', {
-          message: error.message,
-          path: error.path,
-          stack: error.stack,
-        });
-      }
-
-      // User-facing error codes that should pass through in production
+      // User-facing error codes that should pass through (not sent to Sentry)
       const userFacingCodes = [
         'BAD_USER_INPUT',
         'UNAUTHENTICATED',
@@ -430,10 +428,34 @@ async function startServer() {
 
       const errorCode = error.extensions?.code;
       const errorMessage = error.message || '';
+      const isUserFacingError = userFacingCodes.includes(errorCode) || userFacingMessages.includes(errorMessage);
+
+      // Log errors in development
+      if (process.env.NODE_ENV === 'development') {
+        console.error('GraphQL Error:', {
+          message: error.message,
+          path: error.path,
+          stack: error.stack,
+        });
+      }
+
+      // Capture unexpected errors to Sentry (not user-facing ones)
+      if (!isUserFacingError && errorCode !== 'GRAPHQL_VALIDATION_FAILED') {
+        captureException(error, {
+          tags: {
+            type: 'graphql',
+            code: errorCode || 'UNKNOWN',
+          },
+          extra: {
+            path: error.path,
+            locations: error.locations,
+          },
+        });
+      }
 
       if (process.env.NODE_ENV === 'production') {
         // Allow user-facing errors through
-        if (userFacingCodes.includes(errorCode) || userFacingMessages.includes(errorMessage)) {
+        if (isUserFacingError) {
           return formattedError;
         }
         // Mask all other errors
@@ -457,6 +479,9 @@ async function startServer() {
       context: async ({ req, res }) => {
         const me = await getMe(req);
         const timing = new ServerTiming();
+
+        // Set Sentry user context for error tracking
+        setUser(me);
 
         // Set header on response finish
         res.on('finish', () => {
@@ -501,17 +526,36 @@ async function startServer() {
   // Handle unhandled rejections
   process.on('unhandledRejection', (reason, promise) => {
     console.error('Unhandled Rejection at:', promise, 'reason:', reason);
+    captureException(reason, {
+      tags: { type: 'unhandledRejection' },
+    });
   });
 
   // Handle uncaught exceptions
-  process.on('uncaughtException', (error) => {
+  process.on('uncaughtException', async (error) => {
     console.error('Uncaught Exception:', error);
+    captureException(error, {
+      tags: { type: 'uncaughtException' },
+    });
+    // Flush Sentry events before exiting
+    await flushSentry(2000);
     process.exit(1);
+  });
+
+  // Graceful shutdown
+  process.on('SIGTERM', async () => {
+    console.log('SIGTERM received, shutting down gracefully...');
+    await flushSentry(2000);
+    process.exit(0);
   });
 }
 
-startServer().catch(error => {
+startServer().catch(async (error) => {
   console.error('Failed to start server:', error);
+  captureException(error, {
+    tags: { type: 'startupError' },
+  });
+  await flushSentry(2000);
   process.exit(1);
 });
 
