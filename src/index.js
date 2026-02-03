@@ -190,7 +190,32 @@ async function startServer() {
     mongoUri = `mongodb://localhost:27017/${process.env.TEST_DATABASE}`;
   }
 
-  await mongoose.connect(mongoUri);
+  // MongoDB connection pooling configuration
+  // These settings prevent connection exhaustion under load
+  const mongoOptions = {
+    // Connection pool settings
+    minPoolSize: parseInt(process.env.MONGODB_POOL_MIN_SIZE, 10) || 5,
+    maxPoolSize: parseInt(process.env.MONGODB_POOL_MAX_SIZE, 10) || 50,
+    // Timeout settings
+    maxIdleTimeMS: parseInt(process.env.MONGODB_MAX_IDLE_TIME_MS, 10) || 30000,
+    waitQueueTimeoutMS: parseInt(process.env.MONGODB_WAIT_QUEUE_TIMEOUT_MS, 10) || 5000,
+    serverSelectionTimeoutMS: parseInt(process.env.MONGODB_SERVER_SELECTION_TIMEOUT_MS, 10) || 5000,
+    // Socket settings
+    socketTimeoutMS: 45000,
+    // Retry settings
+    retryWrites: true,
+    retryReads: true,
+  };
+
+  await mongoose.connect(mongoUri, mongoOptions);
+
+  // Log connection pool info in development
+  if (process.env.NODE_ENV === 'development') {
+    console.log('MongoDB connection pool configured:', {
+      minPoolSize: mongoOptions.minPoolSize,
+      maxPoolSize: mongoOptions.maxPoolSize,
+    });
+  }
 
   const app = express();
 
