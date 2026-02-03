@@ -3,6 +3,7 @@ import 'dotenv/config';
 import cors from 'cors';
 import morgan from 'morgan';
 import helmet from 'helmet';
+import compression from 'compression';
 import cookieParser from 'cookie-parser';
 import rateLimit from 'express-rate-limit';
 import http from 'http';
@@ -233,6 +234,7 @@ async function startServer() {
   };
 
   app.use(cors(corsOption));
+  app.use(compression()); // Gzip compression for responses (60-80% bandwidth reduction)
   app.use(morgan('dev'));
   app.use(cookieParser());
 
