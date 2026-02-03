@@ -46,8 +46,7 @@ const userSchema = new mongoose.Schema({
 );
 
 // Database indexes for query optimization
-// Note: unique: true on email already creates an index, but we define it explicitly for clarity
-userSchema.index({ email: 1 }, { unique: true, background: true });
+// Note: unique: true on email field already creates an index, so we don't need to duplicate it
 userSchema.index({ createdAt: -1 }, { background: true }); // For sorted user listings
 
 userSchema.statics.findByLogin = async function (login) {
