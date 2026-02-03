@@ -13,7 +13,9 @@
     "test:execute-test": "mocha --require @babel/register 'src/**/*.spec.js'",
     "test": "echo 'Tests require server to be running. Run npm run test:run-server in one terminal, then npm run test:execute-test in another.'",
     "lint": "eslint src/",
-    "lint:fix": "eslint src/ --fix"
+    "lint:fix": "eslint src/ --fix",
+    "docs": "spectaql spectaql.yml",
+    "docs:watch": "spectaql spectaql.yml --development-mode --development-mode-port 4400"
   },
   "keywords": [],
   "author": "Jeff Maxwell <maxjeffwell@gmail.com>",
@@ -28,7 +30,8 @@
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-plugin-import": "^2.32.0",
     "mocha": "^11.7.1",
-    "nodemon": "^3.1.10"
+    "nodemon": "^3.1.10",
+    "spectaql": "^3.0.6"
   },
   "dependencies": {
     "@apollo/server": "^4.12.2",
@@ -38,14 +41,19 @@
     "@babel/preset-env": "^7.6.2",
     "bcryptjs": "^2.4.3",
     "body-parser-graphql": "^1.1.0",
+    "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "dataloader": "^1.4.0",
     "dotenv": "^6.2.0",
     "express": "^4.17.1",
+    "express-rate-limit": "^8.2.1",
     "graphql": "^16.11.0",
+    "graphql-depth-limit": "^1.1.0",
+    "graphql-query-complexity": "^1.1.0",
     "graphql-resolvers": "^0.3.3",
     "graphql-scalars": "^1.24.2",
     "graphql-tag": "^2.12.6",
+    "helmet": "^8.1.0",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.16.3",
     "morgan": "^1.9.1",

@@ -3,12 +3,34 @@ import mongoose from 'mongoose';
 import bcrypt from 'bcryptjs';
 import isEmail from 'validator/lib/isEmail';
 
+// Password complexity requirements
+const PASSWORD_MIN_LENGTH = 8;
+const PASSWORD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/;
+
+// Custom password validator
+const validatePassword = {
+  validator: function (password) {
+    // Skip validation if password is already hashed (starts with $2a$ or $2b$)
+    if (password.startsWith('$2a$') || password.startsWith('$2b$')) {
+      return true;
+    }
+    // Check minimum length
+    if (password.length < PASSWORD_MIN_LENGTH) {
+      return false;
+    }
+    // Check complexity requirements
+    return PASSWORD_REGEX.test(password);
+  },
+  message: `Password must be at least ${PASSWORD_MIN_LENGTH} characters and contain uppercase, lowercase, number, and special character (@$!%*?&)`,
+};
+
 const userSchema = new mongoose.Schema({
   email: {
     type: String,
     unique: true,
     trim: true,
     required: true,
+    maxlength: [254, 'Email cannot exceed 254 characters'],
     validate: [
       isEmail, 'No valid email address provided.',
     ],
@@ -16,12 +38,17 @@ const userSchema = new mongoose.Schema({
   password: {
     type: String,
     required: true,
-    minlength: 7,
-    maxlength: 120, // Increased to accommodate bcrypt hashes
+    maxlength: 120, // Accommodate bcrypt hashes
+    validate: validatePassword,
   },
 },
 { timestamps: true }
 );
+
+// Database indexes for query optimization
+// Note: unique: true on email already creates an index, but we define it explicitly for clarity
+userSchema.index({ email: 1 }, { unique: true, background: true });
+userSchema.index({ createdAt: -1 }, { background: true }); // For sorted user listings
 
 userSchema.statics.findByLogin = async function (login) {
   const user = await this.findOne({

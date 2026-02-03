@@ -1,0 +1,81 @@
+spectaql:
+  # Output directory for generated documentation
+  targetDir: ./docs/api
+
+  # Logo for the documentation (optional)
+  # logoFile: ./docs/logo.png
+
+  # Favicon (optional)
+  # faviconFile: ./docs/favicon.png
+
+  # Theme customization
+  themeDir: null
+
+introspection:
+  # URL to the GraphQL endpoint for introspection
+  # Start the server first with: npm run dev
+  url: http://localhost:8000/graphql
+
+  # Headers to send with introspection request (if auth required)
+  # headers:
+  #   Authorization: 'Bearer <token>'
+
+  # Alternatively, use schema file (for offline generation)
+  # schemaFile: ./schema.graphql
+
+  # Remove deprecated fields from documentation
+  removeTrailingPeriodFromDescriptions: false
+
+info:
+  title: EducationELLy GraphQL API
+  description: |
+    GraphQL API for the EducationELLy English Language Learner Management System.
+
+    ## Overview
+    This API provides endpoints for managing students, user authentication, and AI-powered educational features.
+
+    ## Authentication
+    Most operations require authentication via JWT token. Include the token in the `x-token` header:
+    ```
+    x-token: <your-jwt-token>
+    ```
+
+    ## Getting Started
+    1. Sign up for an account using the `signUp` mutation
+    2. Sign in to receive your JWT token using the `signIn` mutation
+    3. Use the token in subsequent requests
+
+  version: 1.0.0
+  contact:
+    name: Jeff Maxwell
+    email: maxjeffwell@gmail.com
+    url: https://github.com/maxjeffwell
+
+  license:
+    name: GNU GPLv3
+    url: https://www.gnu.org/licenses/gpl-3.0.en.html
+
+  x-introItems:
+    - title: Rate Limiting
+      description: |
+        API requests may be subject to rate limiting. Please implement appropriate retry logic in your applications.
+
+    - title: Error Handling
+      description: |
+        Errors are returned in standard GraphQL format with an `errors` array containing error messages and codes.
+
+servers:
+  - url: http://localhost:8000/graphql
+    description: Development server
+    production: false
+
+  - url: https://api.educationelly.com/graphql
+    description: Production server
+    production: true
+
+extensions:
+  # Show examples in the documentation
+  generateExamples: true
+
+  # Group operations by type
+  groupByDirective: null

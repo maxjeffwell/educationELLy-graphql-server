@@ -2,6 +2,9 @@ import '@babel/polyfill';
 import 'dotenv/config';
 import cors from 'cors';
 import morgan from 'morgan';
+import helmet from 'helmet';
+import cookieParser from 'cookie-parser';
+import rateLimit from 'express-rate-limit';
 import http from 'http';
 import jwt from 'jsonwebtoken';
 import DataLoader from 'dataloader';
@@ -10,6 +13,12 @@ import { ApolloServer } from '@apollo/server';
 import { expressMiddleware } from '@apollo/server/express4';
 import { ApolloServerPluginDrainHttpServer } from '@apollo/server/plugin/drainHttpServer';
 import { GraphQLError } from 'graphql';
+import depthLimit from 'graphql-depth-limit';
+import {
+  getComplexity,
+  simpleEstimator,
+  fieldExtensionsEstimator,
+} from 'graphql-query-complexity';
 import client from 'prom-client';
 
 import mongoose from 'mongoose';
@@ -19,8 +28,57 @@ import resolvers from './resolvers';
 import models from './models';
 import loaders from './loaders';
 
-// Log AI routes registration
-console.log('AI routes registered successfully');
+// Query complexity and depth limits configuration
+const QUERY_DEPTH_LIMIT = 7; // Maximum nesting depth
+const QUERY_COMPLEXITY_LIMIT = 1000; // Maximum complexity score
+
+// Validation rules for GraphQL queries (depth limiting)
+const getValidationRules = () => [
+  // Prevent deeply nested queries (DoS protection)
+  depthLimit(QUERY_DEPTH_LIMIT, {}, (depths) => {
+    if (process.env.NODE_ENV === 'development') {
+      console.log('Query depth:', Math.max(...Object.values(depths)));
+    }
+  }),
+];
+
+// Apollo plugin for query complexity analysis
+const createQueryComplexityPlugin = (execSchema) => ({
+  async requestDidStart() {
+    return {
+      async didResolveOperation({ request, document }) {
+        const complexity = getComplexity({
+          schema: execSchema,
+          query: document,
+          variables: request.variables || {},
+          estimators: [
+            // Use field extensions if defined in schema
+            fieldExtensionsEstimator(),
+            // Fall back to simple estimator: each field = 1 point, lists multiplied
+            simpleEstimator({ defaultComplexity: 1 }),
+          ],
+        });
+
+        if (process.env.NODE_ENV === 'development') {
+          console.log('Query complexity:', complexity);
+        }
+
+        if (complexity > QUERY_COMPLEXITY_LIMIT) {
+          throw new GraphQLError(
+            `Query is too complex: ${complexity}. Maximum allowed: ${QUERY_COMPLEXITY_LIMIT}`,
+            {
+              extensions: {
+                code: 'QUERY_TOO_COMPLEX',
+                complexity,
+                maxComplexity: QUERY_COMPLEXITY_LIMIT,
+              },
+            }
+          );
+        }
+      },
+    };
+  },
+});
 
 // Server-Timing utility for tracking performance metrics
 class ServerTiming {
@@ -151,6 +209,70 @@ async function startServer() {
 
   app.use(cors(corsOption));
   app.use(morgan('dev'));
+  app.use(cookieParser());
+
+  // Cookie configuration for JWT tokens
+  const COOKIE_NAME = 'auth_token';
+  const getCookieOptions = () => ({
+    httpOnly: true, // Prevents XSS attacks from accessing token
+    secure: process.env.NODE_ENV === 'production', // HTTPS only in production
+    sameSite: process.env.NODE_ENV === 'production' ? 'strict' : 'lax',
+    maxAge: 24 * 60 * 60 * 1000, // 24 hours in milliseconds
+    path: '/',
+  });
+
+  // Security headers
+  app.use(helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        styleSrc: ["'self'", "'unsafe-inline'"],
+        scriptSrc: ["'self'"],
+        imgSrc: ["'self'", 'data:', 'https:'],
+        connectSrc: ["'self'"],
+        fontSrc: ["'self'"],
+        objectSrc: ["'none'"],
+        mediaSrc: ["'self'"],
+        frameSrc: ["'none'"],
+      },
+    },
+    crossOriginEmbedderPolicy: false, // Allow GraphQL Playground
+  }));
+
+  // Rate limiting for GraphQL endpoint (prevents brute force attacks)
+  const graphqlLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 100, // Limit each IP to 100 requests per windowMs
+    message: {
+      errors: [{
+        message: 'Too many requests, please try again later.',
+        extensions: { code: 'RATE_LIMITED' }
+      }]
+    },
+    standardHeaders: true,
+    legacyHeaders: false,
+  });
+
+  // Stricter rate limiting for authentication attempts
+  const authLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 5, // Limit each IP to 5 auth attempts per windowMs
+    message: {
+      errors: [{
+        message: 'Too many authentication attempts, please try again later.',
+        extensions: { code: 'RATE_LIMITED' }
+      }]
+    },
+    standardHeaders: true,
+    legacyHeaders: false,
+    // Only apply to requests that look like auth mutations
+    skip: (req) => {
+      const body = req.body;
+      if (!body?.query) return true;
+      const query = body.query.toLowerCase();
+      return !query.includes('signin') && !query.includes('signup');
+    },
+  });
 
   // Metrics middleware (before other routes)
   app.use((req, res, next) => {
@@ -166,9 +288,35 @@ async function startServer() {
     next();
   });
 
-  // Health check endpoint
-  app.get('/health', (req, res) => {
-    res.status(200).json({ status: 'OK', timestamp: new Date().toISOString() });
+  // Health check endpoint with database connectivity verification
+  app.get('/health', async (req, res) => {
+    try {
+      // Verify database connection
+      const dbState = mongoose.connection.readyState;
+      const dbConnected = dbState === 1; // 1 = connected
+
+      if (dbConnected) {
+        // Ping the database to ensure it's responsive
+        await mongoose.connection.db.admin().ping();
+        res.status(200).json({
+          status: 'OK',
+          database: 'connected',
+          timestamp: new Date().toISOString(),
+        });
+      } else {
+        res.status(503).json({
+          status: 'DEGRADED',
+          database: 'disconnected',
+          timestamp: new Date().toISOString(),
+        });
+      }
+    } catch (error) {
+      res.status(503).json({
+        status: 'ERROR',
+        database: 'error',
+        timestamp: new Date().toISOString(),
+      });
+    }
   });
 
   // Prometheus metrics endpoint
@@ -187,7 +335,8 @@ async function startServer() {
   });
 
   const getMe = async req => {
-    const token = req.headers['x-token'];
+    // Check for token in httpOnly cookie first (preferred), then fall back to x-token header
+    const token = req.cookies?.[COOKIE_NAME] || req.headers['x-token'];
 
     if (token) {
       try {
@@ -207,52 +356,62 @@ async function startServer() {
 
   const httpServer = http.createServer(app);
 
-  const server = new ApolloServer({
+  // Build executable schema for complexity analysis
+  const { makeExecutableSchema } = await import('@graphql-tools/schema');
+  const executableSchema = makeExecutableSchema({
     typeDefs: schema,
     resolvers,
+  });
+
+  const server = new ApolloServer({
+    schema: executableSchema,
     introspection: true,
-    playground: true,
     plugins: [
       ApolloServerPluginDrainHttpServer({ httpServer }),
       serverTimingPlugin,
+      createQueryComplexityPlugin(executableSchema),
     ],
+    validationRules: getValidationRules(),
     formatError: (formattedError, error) => {
-      console.error('GraphQL Error Details:', {
-        message: error.message,
-        originalMessage: error.originalError?.message,
-        locations: error.locations,
-        path: error.path,
-        stack: process.env.NODE_ENV === 'development' ? error.stack : undefined,
-        extensions: error.extensions
-      });
+      // Log errors in development only
+      if (process.env.NODE_ENV === 'development') {
+        console.error('GraphQL Error:', {
+          message: error.message,
+          path: error.path,
+          stack: error.stack,
+        });
+      }
 
-      // Allow specific user-facing errors to pass through in production
-      const userFacingErrors = [
-        'Student not found',
-        'Invalid student ID format',
-        'Cannot delete student: This student has related records that must be deleted first',
-        'You are not authenticated as a user',
-        'Your session has expired. Please sign in again.'
+      // User-facing error codes that should pass through in production
+      const userFacingCodes = [
+        'BAD_USER_INPUT',
+        'UNAUTHENTICATED',
+        'FORBIDDEN',
+        'NOT_FOUND',
+        'QUERY_TOO_COMPLEX',
+        'RATE_LIMITED',
       ];
 
-      // Check both error.message and originalError.message
-      const errorMessage = error.message || error.originalError?.message || '';
-      
-      console.log('Checking error message:', errorMessage);
-      console.log('User facing errors:', userFacingErrors);
-      console.log('Is user facing?', userFacingErrors.includes(errorMessage));
-      console.log('NODE_ENV:', process.env.NODE_ENV);
+      // Specific messages that are safe to show users
+      const userFacingMessages = [
+        'Student not found',
+        'Invalid student ID format',
+        'You are not authenticated as a user',
+        'Your session has expired. Please sign in again.',
+        'You have entered invalid login credentials',
+      ];
+
+      const errorCode = error.extensions?.code;
+      const errorMessage = error.message || '';
 
       if (process.env.NODE_ENV === 'production') {
-        if (userFacingErrors.includes(errorMessage)) {
-          console.log('Allowing user-facing error through:', errorMessage);
+        // Allow user-facing errors through
+        if (userFacingCodes.includes(errorCode) || userFacingMessages.includes(errorMessage)) {
           return formattedError;
         }
-        console.log('Masking error as internal server error');
+        // Mask all other errors
         return new GraphQLError('Internal server error', {
-          extensions: {
-            code: 'INTERNAL_SERVER_ERROR',
-          },
+          extensions: { code: 'INTERNAL_SERVER_ERROR' },
         });
       }
       return formattedError;
@@ -264,7 +423,9 @@ async function startServer() {
   app.use(
     '/graphql',
     cors(corsOption),
-    express.json(),
+    express.json({ limit: '100kb' }), // Prevent payload DoS attacks
+    graphqlLimiter, // General rate limiting
+    authLimiter, // Stricter auth rate limiting
     expressMiddleware(server, {
       context: async ({ req, res }) => {
         const me = await getMe(req);
@@ -281,8 +442,15 @@ async function startServer() {
         return {
           models,
           me,
-          secret: process.env.JWT_SECRET,
-          timing, // Expose timing utility to resolvers
+          res, // Pass response object for cookie operations
+          // Cookie utilities for auth resolvers
+          setAuthCookie: (token) => {
+            res.cookie(COOKIE_NAME, token, getCookieOptions());
+          },
+          clearAuthCookie: () => {
+            res.clearCookie(COOKIE_NAME, { path: '/' });
+          },
+          timing,
           loaders: {
             user: new DataLoader(keys =>
               loaders.user.batchUsers(keys, models)),
