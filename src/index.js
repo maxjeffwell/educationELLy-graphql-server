@@ -226,6 +226,9 @@ async function startServer() {
 
   const app = express();
 
+  // Trust first proxy (K8s ingress) for accurate client IP in rate limiting
+  app.set('trust proxy', 1);
+
   const corsOption = {
     origin: process.env.NODE_ENV === 'development' ? true : (
       process.env.ALLOWED_ORIGINS ? process.env.ALLOWED_ORIGINS.split(',') : [
