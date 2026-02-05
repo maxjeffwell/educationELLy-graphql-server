@@ -79,8 +79,18 @@ jobs:
 
       - name: Test Docker image
         run: |
-          docker run --rm -d --name test-server \
-            -e MONGODB_URI=mongodb://test \
+          # Create a network for containers
+          docker network create test-net
+
+          # Start MongoDB container
+          docker run --rm -d --name test-mongo --network test-net mongo:7
+
+          # Wait for MongoDB to be ready
+          sleep 5
+
+          # Start server container with MongoDB connection
+          docker run --rm -d --name test-server --network test-net \
+            -e MONGODB_URI=mongodb://test-mongo:27017/test \
             -e JWT_SECRET=test-secret \
             -e ALLOWED_ORIGINS=http://localhost \
             educationelly-graphql-server:ci-test
@@ -92,9 +102,13 @@ jobs:
           if docker ps | grep test-server; then
             echo "✅ Container started successfully"
             docker stop test-server
+            docker stop test-mongo
+            docker network rm test-net
           else
             echo "❌ Container failed to start"
-            docker logs test-server
+            docker logs test-server 2>/dev/null || echo "No logs available"
+            docker stop test-mongo 2>/dev/null
+            docker network rm test-net 2>/dev/null
             exit 1
           fi
 
