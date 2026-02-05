@@ -88,6 +88,7 @@ const studentSchema = new mongoose.Schema({
   },
   ellStatus: {
     type: String,
+    required: [true, 'ELL status is required'],
     trim: true,
     enum: {
       values: ELL_STATUSES,
@@ -96,6 +97,7 @@ const studentSchema = new mongoose.Schema({
   },
   compositeLevel: {
     type: String,
+    required: [true, 'Composite level is required'],
     trim: true,
     enum: {
       values: COMPOSITE_LEVELS,
@@ -108,6 +110,7 @@ const studentSchema = new mongoose.Schema({
   },
   designation: {
     type: String,
+    required: [true, 'Designation is required'],
     trim: true,
     enum: {
       values: DESIGNATIONS,

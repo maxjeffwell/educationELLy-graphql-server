@@ -1,10 +1,18 @@
 import Student from '../../models/student';
 
+// Default required fields for all student tests
+const requiredFields = {
+  ellStatus: 'Active ELL',
+  compositeLevel: 'Intermediate',
+  designation: 'ELL',
+};
+
 describe('Student Model', () => {
   describe('Validation', () => {
     it('should create a valid student with required fields', async () => {
       const student = await Student.create({
         fullName: 'Test Student',
+        ...requiredFields,
       });
 
       expect(student._id).toBeDefined();
@@ -40,13 +48,45 @@ describe('Student Model', () => {
       await expect(
         Student.create({
           school: 'Test School',
+          ...requiredFields,
         })
       ).rejects.toThrow('Full name is required');
+    });
+
+    it('should require ellStatus', async () => {
+      await expect(
+        Student.create({
+          fullName: 'Test Student',
+          compositeLevel: 'Intermediate',
+          designation: 'ELL',
+        })
+      ).rejects.toThrow('ELL status is required');
+    });
+
+    it('should require compositeLevel', async () => {
+      await expect(
+        Student.create({
+          fullName: 'Test Student',
+          ellStatus: 'Active ELL',
+          designation: 'ELL',
+        })
+      ).rejects.toThrow('Composite level is required');
+    });
+
+    it('should require designation', async () => {
+      await expect(
+        Student.create({
+          fullName: 'Test Student',
+          ellStatus: 'Active ELL',
+          compositeLevel: 'Intermediate',
+        })
+      ).rejects.toThrow('Designation is required');
     });
 
     it('should trim fullName whitespace', async () => {
       const student = await Student.create({
         fullName: '  Trimmed Name  ',
+        ...requiredFields,
       });
 
       expect(student.fullName).toBe('Trimmed Name');
@@ -58,6 +98,7 @@ describe('Student Model', () => {
       await expect(
         Student.create({
           fullName: longName,
+          ...requiredFields,
         })
       ).rejects.toThrow('cannot exceed 100 characters');
     });
@@ -87,6 +128,7 @@ describe('Student Model', () => {
           const student = await Student.create({
             fullName: `Grade ${grade} Student`,
             gradeLevel: grade,
+            ...requiredFields,
           });
 
           expect(student.gradeLevel).toBe(grade);
@@ -98,6 +140,7 @@ describe('Student Model', () => {
           Student.create({
             fullName: 'Invalid Grade Student',
             gradeLevel: 'InvalidGrade',
+            ...requiredFields,
           })
         ).rejects.toThrow('Grade level must be one of');
       });
@@ -117,6 +160,8 @@ describe('Student Model', () => {
           const student = await Student.create({
             fullName: `${status} Student`,
             ellStatus: status,
+            compositeLevel: 'Intermediate',
+            designation: 'ELL',
           });
 
           expect(student.ellStatus).toBe(status);
@@ -128,6 +173,8 @@ describe('Student Model', () => {
           Student.create({
             fullName: 'Invalid Status Student',
             ellStatus: 'InvalidStatus',
+            compositeLevel: 'Intermediate',
+            designation: 'ELL',
           })
         ).rejects.toThrow('ELL status must be one of');
       });
@@ -148,6 +195,8 @@ describe('Student Model', () => {
           const student = await Student.create({
             fullName: `${level} Student`,
             compositeLevel: level,
+            ellStatus: 'Active ELL',
+            designation: 'ELL',
           });
 
           expect(student.compositeLevel).toBe(level);
@@ -159,8 +208,38 @@ describe('Student Model', () => {
           Student.create({
             fullName: 'Invalid Level Student',
             compositeLevel: 'InvalidLevel',
+            ellStatus: 'Active ELL',
+            designation: 'ELL',
           })
         ).rejects.toThrow('Composite level must be one of');
+      });
+    });
+
+    describe('designation', () => {
+      const validDesignations = ['ELL', 'RFEP', 'IFEP', 'EO', 'TBD'];
+
+      it('should accept valid designations', async () => {
+        for (const designation of validDesignations) {
+          const student = await Student.create({
+            fullName: `${designation} Student`,
+            designation: designation,
+            ellStatus: 'Active ELL',
+            compositeLevel: 'Intermediate',
+          });
+
+          expect(student.designation).toBe(designation);
+        }
+      });
+
+      it('should reject invalid designation', async () => {
+        await expect(
+          Student.create({
+            fullName: 'Invalid Designation Student',
+            designation: 'InvalidDesignation',
+            ellStatus: 'Active ELL',
+            compositeLevel: 'Intermediate',
+          })
+        ).rejects.toThrow('Designation must be one of');
       });
     });
 
@@ -178,6 +257,7 @@ describe('Student Model', () => {
           const student = await Student.create({
             fullName: `${gender} Student`,
             gender: gender,
+            ...requiredFields,
           });
 
           expect(student.gender).toBe(gender);
@@ -189,6 +269,7 @@ describe('Student Model', () => {
           Student.create({
             fullName: 'Invalid Gender Student',
             gender: 'InvalidGender',
+            ...requiredFields,
           })
         ).rejects.toThrow('Gender must be one of');
       });
@@ -201,6 +282,7 @@ describe('Student Model', () => {
         Student.create({
           fullName: 'Test Student',
           school: 'A'.repeat(151),
+          ...requiredFields,
         })
       ).rejects.toThrow('School name cannot exceed 150 characters');
     });
@@ -210,6 +292,7 @@ describe('Student Model', () => {
         Student.create({
           fullName: 'Test Student',
           teacher: 'A'.repeat(101),
+          ...requiredFields,
         })
       ).rejects.toThrow('Teacher name cannot exceed 100 characters');
     });
@@ -219,6 +302,7 @@ describe('Student Model', () => {
         Student.create({
           fullName: 'Test Student',
           cityOfBirth: 'A'.repeat(101),
+          ...requiredFields,
         })
       ).rejects.toThrow('City cannot exceed 100 characters');
     });
@@ -228,6 +312,7 @@ describe('Student Model', () => {
         Student.create({
           fullName: 'Test Student',
           countryOfBirth: 'A'.repeat(101),
+          ...requiredFields,
         })
       ).rejects.toThrow('Country cannot exceed 100 characters');
     });
@@ -237,6 +322,7 @@ describe('Student Model', () => {
         Student.create({
           fullName: 'Test Student',
           nativeLanguage: 'A'.repeat(51),
+          ...requiredFields,
         })
       ).rejects.toThrow('Language cannot exceed 50 characters');
     });
@@ -247,6 +333,7 @@ describe('Student Model', () => {
       const student = await Student.create({
         fullName: 'Valid DOB Student',
         dateOfBirth: new Date('2010-05-15'),
+        ...requiredFields,
       });
 
       expect(student.dateOfBirth).toEqual(new Date('2010-05-15'));
@@ -260,6 +347,7 @@ describe('Student Model', () => {
         Student.create({
           fullName: 'Future Student',
           dateOfBirth: futureDate,
+          ...requiredFields,
         })
       ).rejects.toThrow('Date of birth must be between 1900 and today');
     });
@@ -269,6 +357,7 @@ describe('Student Model', () => {
         Student.create({
           fullName: 'Ancient Student',
           dateOfBirth: new Date('1899-12-31'),
+          ...requiredFields,
         })
       ).rejects.toThrow('Date of birth must be between 1900 and today');
     });
@@ -278,6 +367,7 @@ describe('Student Model', () => {
     it('should set active to true by default', async () => {
       const student = await Student.create({
         fullName: 'Default Active Student',
+        ...requiredFields,
       });
 
       expect(student.active).toBe(true);
@@ -287,6 +377,7 @@ describe('Student Model', () => {
       const student = await Student.create({
         fullName: 'Inactive Student',
         active: false,
+        ...requiredFields,
       });
 
       expect(student.active).toBe(false);
@@ -299,6 +390,7 @@ describe('Student Model', () => {
 
       const student = await Student.create({
         fullName: 'Timestamp Student',
+        ...requiredFields,
       });
 
       const afterCreate = new Date();

@@ -173,8 +173,8 @@ export default gql`
   }
 
   """
-  Input for creating a new student. Only fullName is required;
-  other fields can be added later via updateStudent.
+  Input for creating a new student. Required fields: fullName, ellStatus, compositeLevel, designation.
+  Other fields can be added later via updateStudent.
   """
   input NewStudentInput {
     "Student's full legal name (required)"
@@ -195,14 +195,14 @@ export default gql`
     nativeLanguage: String
     "City where the student was born"
     cityOfBirth: String
-    "English Language Learner status"
-    ellStatus: ELLStatus
-    "Overall English proficiency composite level"
-    compositeLevel: CompositeLevel
+    "English Language Learner status (required)"
+    ellStatus: ELLStatus!
+    "Overall English proficiency composite level (required)"
+    compositeLevel: CompositeLevel!
     "Whether the student is currently active in the program"
     active: Boolean
-    "Student language program designation"
-    designation: Designation
+    "Student language program designation (required)"
+    designation: Designation!
     "Country where the student was born"
     countryOfBirth: String
   }

@@ -186,6 +186,8 @@ describe('Student Resolvers', () => {
               school: 'Test Elementary',
               gradeLevel: '3',
               ellStatus: 'ACTIVE_ELL',
+              compositeLevel: 'INTERMEDIATE',
+              designation: 'ELL',
               active: true,
             },
           },
@@ -211,6 +213,9 @@ describe('Student Resolvers', () => {
               createStudent(input: $input) {
                 _id
                 fullName
+                ellStatus
+                compositeLevel
+                designation
                 active
               }
             }
@@ -218,6 +223,9 @@ describe('Student Resolvers', () => {
           variables: {
             input: {
               fullName: 'Minimal Student',
+              ellStatus: 'ACTIVE_ELL',
+              compositeLevel: 'BEGINNING',
+              designation: 'TBD',
             },
           },
         });
@@ -225,6 +233,9 @@ describe('Student Resolvers', () => {
       expect(response.status).toBe(200);
       expect(response.body.errors).toBeUndefined();
       expect(response.body.data.createStudent.fullName).toBe('Minimal Student');
+      expect(response.body.data.createStudent.ellStatus).toBe('ACTIVE_ELL');
+      expect(response.body.data.createStudent.compositeLevel).toBe('BEGINNING');
+      expect(response.body.data.createStudent.designation).toBe('TBD');
       expect(response.body.data.createStudent.active).toBe(true); // Default value
     });
 
@@ -265,6 +276,9 @@ describe('Student Resolvers', () => {
           variables: {
             input: {
               fullName: 'Unauthorized Student',
+              ellStatus: 'ACTIVE_ELL',
+              compositeLevel: 'INTERMEDIATE',
+              designation: 'ELL',
             },
           },
         });
@@ -483,6 +497,9 @@ describe('Student Resolvers', () => {
               input: {
                 fullName: `Grade ${grade} Student`,
                 gradeLevel: grade,
+                ellStatus: 'ACTIVE_ELL',
+                compositeLevel: 'INTERMEDIATE',
+                designation: 'ELL',
               },
             },
           });
@@ -511,6 +528,8 @@ describe('Student Resolvers', () => {
               input: {
                 fullName: `${status} Student`,
                 ellStatus: status,
+                compositeLevel: 'INTERMEDIATE',
+                designation: 'ELL',
               },
             },
           });
@@ -537,6 +556,9 @@ describe('Student Resolvers', () => {
           variables: {
             input: {
               fullName: longName,
+              ellStatus: 'ACTIVE_ELL',
+              compositeLevel: 'INTERMEDIATE',
+              designation: 'ELL',
             },
           },
         });

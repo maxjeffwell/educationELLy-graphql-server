@@ -160,6 +160,7 @@ export const createTestStudent = async (overrides = {}) => {
     nativeLanguage: 'Spanish',
     ellStatus: 'Active ELL',
     compositeLevel: 'Intermediate',
+    designation: 'ELL',
     active: true,
     ...overrides,
   };
