@@ -120,7 +120,7 @@ describe('Student Resolvers', () => {
       expect(response.status).toBe(200);
       expect(response.body.data.student).toBeTruthy();
       expect(response.body.data.student.fullName).toBe('Find Me Student');
-      expect(response.body.data.student.ellStatus).toBe('Active ELL');
+      expect(response.body.data.student.ellStatus).toBe('ACTIVE_ELL');
     });
 
     it('returns null for non-existent student', async () => {
@@ -185,7 +185,7 @@ describe('Student Resolvers', () => {
               fullName: 'New Test Student',
               school: 'Test Elementary',
               gradeLevel: '3',
-              ellStatus: 'Active ELL',
+              ellStatus: 'ACTIVE_ELL',
               active: true,
             },
           },
@@ -323,7 +323,7 @@ describe('Student Resolvers', () => {
             _id: student._id.toString(),
             input: {
               fullName: 'Updated Name',
-              ellStatus: 'Exited',
+              ellStatus: 'EXITED',
             },
           },
         });
@@ -331,7 +331,7 @@ describe('Student Resolvers', () => {
       expect(response.status).toBe(200);
       expect(response.body.errors).toBeUndefined();
       expect(response.body.data.updateStudent.fullName).toBe('Updated Name');
-      expect(response.body.data.updateStudent.ellStatus).toBe('Exited');
+      expect(response.body.data.updateStudent.ellStatus).toBe('EXITED');
     });
 
     it('returns error for non-existent student', async () => {
@@ -493,7 +493,7 @@ describe('Student Resolvers', () => {
     });
 
     it('validates ellStatus enum values', async () => {
-      const validStatuses = ['Active ELL', 'Exited', 'Monitoring'];
+      const validStatuses = ['ACTIVE_ELL', 'EXITED', 'MONITORING', 'NEVER_ELL', 'REFUSED_SERVICES'];
 
       for (const status of validStatuses) {
         const response = await request(app)

@@ -12,6 +12,7 @@ const COMPOSITE_LEVELS = [
   'Early Advanced', 'Advanced', 'Proficient',
 ];
 const GENDERS = ['Male', 'Female', 'Non-binary', 'Other', 'Prefer not to say'];
+const DESIGNATIONS = ['ELL', 'RFEP', 'IFEP', 'EO', 'TBD'];
 
 // Max lengths for string fields
 const MAX_NAME_LENGTH = 100;
@@ -108,7 +109,10 @@ const studentSchema = new mongoose.Schema({
   designation: {
     type: String,
     trim: true,
-    maxlength: [MAX_GENERAL_LENGTH, `Designation cannot exceed ${MAX_GENERAL_LENGTH} characters`],
+    enum: {
+      values: DESIGNATIONS,
+      message: `Designation must be one of: ${DESIGNATIONS.join(', ')}`,
+    },
   },
 }, {
   timestamps: true,

@@ -1,6 +1,56 @@
 import { gql } from 'graphql-tag';
 
 export default gql`
+  """
+  English Language Learner program status
+  """
+  enum ELLStatus {
+    "Currently receiving ELL services"
+    ACTIVE_ELL
+    "Successfully exited the ELL program"
+    EXITED
+    "Being monitored after exiting ELL program"
+    MONITORING
+    "Never identified as an English Language Learner"
+    NEVER_ELL
+    "Family refused ELL services"
+    REFUSED_SERVICES
+  }
+
+  """
+  English proficiency composite level based on assessment scores
+  """
+  enum CompositeLevel {
+    "Lowest proficiency level"
+    BEGINNING
+    "Between Beginning and Intermediate"
+    EARLY_INTERMEDIATE
+    "Mid-level proficiency"
+    INTERMEDIATE
+    "Between Intermediate and Advanced"
+    EARLY_ADVANCED
+    "High proficiency level"
+    ADVANCED
+    "Fully proficient in English"
+    PROFICIENT
+  }
+
+  """
+  Student language program designation
+  """
+  enum Designation {
+    "English Language Learner"
+    ELL
+    "Reclassified Fluent English Proficient"
+    RFEP
+    "Initially Fluent English Proficient"
+    IFEP
+    "English Only"
+    EO
+    "To Be Determined"
+    TBD
+  }
+
   extend type Query {
     """
     Retrieve all students belonging to the authenticated user.
@@ -71,14 +121,14 @@ export default gql`
     nativeLanguage: String
     "City where the student was born"
     cityOfBirth: String
-    "English Language Learner status (e.g., 'Active ELL', 'Exited', 'Monitoring')"
-    ellStatus: String
-    "Overall English proficiency composite level (e.g., 'Beginning', 'Intermediate', 'Advanced')"
-    compositeLevel: String
+    "English Language Learner status"
+    ellStatus: ELLStatus
+    "Overall English proficiency composite level"
+    compositeLevel: CompositeLevel
     "Whether the student is currently active in the program"
     active: Boolean
-    "Special program designation or classification"
-    designation: String
+    "Student language program designation"
+    designation: Designation
     "Country where the student was born"
     countryOfBirth: String
     "Timestamp when the student record was created"
@@ -111,13 +161,13 @@ export default gql`
     "City where the student was born"
     cityOfBirth: String
     "English Language Learner status"
-    ellStatus: String
+    ellStatus: ELLStatus
     "Overall English proficiency composite level"
-    compositeLevel: String
+    compositeLevel: CompositeLevel
     "Whether the student is currently active in the program"
     active: Boolean
-    "Special program designation or classification"
-    designation: String
+    "Student language program designation"
+    designation: Designation
     "Country where the student was born"
     countryOfBirth: String
   }
@@ -146,13 +196,13 @@ export default gql`
     "City where the student was born"
     cityOfBirth: String
     "English Language Learner status"
-    ellStatus: String
+    ellStatus: ELLStatus
     "Overall English proficiency composite level"
-    compositeLevel: String
+    compositeLevel: CompositeLevel
     "Whether the student is currently active in the program"
     active: Boolean
-    "Special program designation or classification"
-    designation: String
+    "Student language program designation"
+    designation: Designation
     "Country where the student was born"
     countryOfBirth: String
   }
