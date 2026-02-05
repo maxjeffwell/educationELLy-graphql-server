@@ -10,6 +10,7 @@ module.exports = {
     node: true,
     es2022: true,
     mocha: true,
+    jest: true,
   },
   rules: {
     // Allow console for server-side logging
